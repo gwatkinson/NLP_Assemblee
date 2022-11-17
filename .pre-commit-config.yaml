@@ -42,10 +42,10 @@ repos:
   hooks:
     - id: docformatter
       args: [--in-place]
--   repo: https://github.com/kynan/nbstripout
-    rev: 0.3.9
-    hooks:
-    - id: nbstripout
+# -   repo: https://github.com/kynan/nbstripout
+#     rev: 0.3.9
+#     hooks:
+#     - id: nbstripout
 -   repo: https://github.com/nbQA-dev/nbQA
     rev: 1.2.2
     hooks:
@@ -56,3 +56,15 @@ repos:
         args: ["--line-length=100"]
       - id: nbqa-isort
         args: ["--profile=black"]
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.3.1
+    hooks:
+    -   id: insert-license
+        files: \.py$
+        args: [ --license-filepath, disclaimer.txt ]
+-   repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
+    rev: v1.1.2
+    hooks:
+    -   id: markdown-toc
+        # optional custom config:
+        args: [--indent, "    ", -i]
