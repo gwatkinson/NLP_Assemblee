@@ -1,0 +1,58 @@
+fail_fast: false
+default_stages: [commit, push]
+repos:
+-   repo: https://github.com/jorisroovers/gitlint
+    rev:  v0.17.0
+    hooks:
+    -   id: gitlint
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-json
+    -   id: check-merge-conflict
+    -   id: check-toml
+    -   id: check-xml
+    -   id: detect-private-key
+    -   id: name-tests-test
+    -   id: check-added-large-files
+-   repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+    - id: flake8
+      args: ["--max-line-length=100"]  # , "--ignore=E101, E111, E114, E115, E116, E117, E121, E122, E123, E124, E125, E126, E127, E128, E129, E131, E133, E2, E3, E5, E701, E702, E703, E704, W1, W2, W3, W503, W504"]
+-   repo: https://github.com/PyCQA/doc8
+    rev: 0.11.2
+    hooks:
+    - id: doc8
+-   repo: https://github.com/terrencepreilly/darglint
+    rev: v1.8.1
+    hooks:
+    - id: darglint
+      args: ["docstring_style=google"]
+-   repo: https://github.com/ambv/black
+    rev: 21.12b0
+    hooks:
+    - id: black
+      args: ["--line-length=100"]
+- repo: https://github.com/myint/docformatter
+  rev: v1.3.1
+  hooks:
+    - id: docformatter
+      args: [--in-place]
+-   repo: https://github.com/kynan/nbstripout
+    rev: 0.3.9
+    hooks:
+    - id: nbstripout
+-   repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.2.2
+    hooks:
+      - id: nbqa-flake8
+        args: ["--max-line-length=100"]
+        # "--ignore=E402=E101, E111, E114, E115, E116, E117, E121, E122, E123, E124, E125, E126, E127, E128, E129, E131, E133, E2, E3, E5, E701, E702, E703, E704, W1, W2, W3, W503, W504",
+      - id: nbqa-black
+        args: ["--line-length=100"]
+      - id: nbqa-isort
+        args: ["--profile=black"]
