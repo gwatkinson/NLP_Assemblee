@@ -20,44 +20,27 @@ Then, move into it:
 cd NLP_Assemblee
 ```
 
-### Poetry
+### Create conda enviromnent
 
-This project uses poetry to manage the Python packages. So, before installing the dependancies, [install poetry](https://python-poetry.org/docs/#installation).
-
-**On linux, MacOs, WSL:**
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
+Create conda enviromnent for Linux-64:
+```
+conda create --name YOURENV --file conda-linux-64.lock
 ```
 
-**On Windows:**
-```Powershell
- (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+Create conda enviromnent for Windows-64:
+```
+conda create --name YOURENV --file conda-win-64.lock
 ```
 
-Then, make sure it is in your `$PATH`. You can check that by running :
-
-```bash
-poetry --version
+Create conda enviromnent for Mac:
+```
+conda create --name YOURENV --file conda-osx-arm64.lock
 ```
 
-If this command doesn't work, look at the [documentation](https://python-poetry.org/docs/#installation).
-
-### Install the packages
-
-Once poetry is installed, you can install the packages:
+You can then activate the enviromnent:
 ```
-poetry install
+conda activate YOURENV
 ```
-
-This will install the exact versions specified in the `poetry.lock` file.
-
-This will create an enviromnent and install the packages into it.
-However, if you already have a venv activated, it will install them into it.
-You can use both conda or basic Python environment.
-
-## Contributing
-
-This section describes some norms to follow while developping in this project.
 
 ### Pre-commit
 
