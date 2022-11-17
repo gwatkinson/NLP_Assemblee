@@ -7,6 +7,6 @@
 """This package is developed in the context of a NLP project for the Deep
 Learning course of the MVA."""
 
-__author__ = "Gabriel Watkinson, Jeremie Stym-Popper"
+__author__ = "Gabriel Watkinson, Jéremie Stym-Popper"
 __license__ = "MIT"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
