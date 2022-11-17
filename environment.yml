@@ -1,0 +1,52 @@
+# Followed instruction from https://stackoverflow.com/questions/70851048/does-it-make-sense-to-use-conda-poetry to move from poetry to conda-lock.
+# Follow the instruction on https://github.com/conda-incubator/conda-lock.
+
+name: pytorch_cuda-11-7
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  # We want to have a reproducible setup, so we don't want default channels,
+  # which may be different for different users. All required channels should
+  # be listed explicitly here.
+  - nodefaults
+
+dependencies:
+  # Env
+  - python=3.10.*  # or don't specify the version and use the latest stable Python
+  - mamba=1.0.0
+  - conda-lock=1.2.1
+  - pip=22.3.1
+  - pre-commit=2.20.0
+  # Pytorch
+  - pytorch::pytorch=1.13.0
+  - pytorch::torchaudio=0.13.0
+  - pytorch::torchvision=0.14.0
+  - pytorch::pytorch-cuda=11.7
+  # Other classic data and ML packages
+  - numpy=1.23
+  - pandas=1.5
+  - scipy=1.9
+  - scikit-learn=1.1
+  # Plots
+  - matplotlib=3.6
+  - seaborn=0.12
+  - plotly=5.11
+  # Jupyter
+  - jupyter=1.0
+  - notebook=6.5
+  - voila=0.4
+  # Formatter
+  - black=22.10
+  - pylint=2.15
+  - isort=5.10
+  - mypy=0.991
+  # Docs
+  - mkdocs=1.4
+  - streamlit=1.14
+
+# Non-standard section listing target platforms for conda-lock:
+platforms:
+  - linux-64
+  - win-64
