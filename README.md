@@ -84,5 +84,3 @@ Articles to get started:
 
 * https://jeffkreeftmeijer.com/git-flow/
 * https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
-
-
