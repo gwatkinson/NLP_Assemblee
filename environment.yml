@@ -1,4 +1,5 @@
-# Followed instruction from https://stackoverflow.com/questions/70851048/does-it-make-sense-to-use-conda-poetry
+# Followed instruction from https://stackoverflow.com/questions/70851048/does-it-make-sense-to-use-conda-poetry to move from poetry to conda-lock.
+# Follow the instruction on https://github.com/conda-incubator/conda-lock.
 
 name: pytorch_cuda-11-7
 
