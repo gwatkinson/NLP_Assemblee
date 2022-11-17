@@ -17,7 +17,6 @@ dependencies:
   - mamba=1.0.0
   - conda-lock=1.2.1
   - pip=22.3.1
-  - poetry=1.1.15
   - pre-commit=2.20.0
   # Pytorch
   - pytorch::pytorch=1.13.0
