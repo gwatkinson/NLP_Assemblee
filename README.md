@@ -2,8 +2,25 @@
 
 This repository contains the NLP project for the Deep Learning course of the MVA.
 
+This is a group project with Gabriel Watkinson and Jéremie Stym-Popper.
 
-## Installation
+<!-- toc -->
+
+- [Problematic](#problematic)
+- [Contributing](#contributing)
+    * [Clone the repository](#clone-the-repository)
+    * [Create conda enviromnent](#create-conda-enviromnent)
+    * [Pre-commit](#pre-commit)
+    * [Git-Flow](#git-flow)
+
+<!-- tocstop -->
+
+## Problematic
+
+This project aims to recreate a map of the French Assemblée Nationale, by classifying the deputees' political opinions on a range of subjects.
+
+
+## Contributing
 
 To install the dependencies needed for running the code locally, follow the next steps:
 
@@ -20,51 +37,36 @@ Then, move into it:
 cd NLP_Assemblee
 ```
 
-### Poetry
+### Create conda enviromnent
 
-This project uses poetry to manage the Python packages. So, before installing the dependancies, [install poetry](https://python-poetry.org/docs/#installation).
+Make sure you have conda or [miniconda](https://docs.conda.io/en/latest/miniconda.html) installed (see [here](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) for instructions to install conda).
 
-**On linux, MacOs, WSL:**
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
+To create the conda enviromnent named `YOURENV`, choose your platform and use the following commands:
+
+Create conda enviromnent for Linux-64:
+```
+conda create --name YOURENV --file conda-linux-64.lock
 ```
 
-**On Windows:**
-```Powershell
- (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+Create conda enviromnent for Windows-64:
 ```
-
-Then, make sure it is in your `$PATH`. You can check that by running :
-
-```bash
-poetry --version
+conda create --name YOURENV --file conda-win-64.lock
 ```
+This can take a while since there are many packages that are quite big (namely pytorch).
 
-If this command doesn't work, look at the [documentation](https://python-poetry.org/docs/#installation).
-
-### Install the packages
-
-Once poetry is installed, you can install the packages:
+You can then activate the enviromnent:
 ```
-poetry install
+conda activate YOURENV
 ```
-
-This will install the exact versions specified in the `poetry.lock` file.
-
-This will create an enviromnent and install the packages into it.
-However, if you already have a venv activated, it will install them into it.
-You can use both conda or basic Python environment.
-
-## Contributing
-
-This section describes some norms to follow while developping in this project.
 
 ### Pre-commit
 
-If you want to contribute, please install the pre-commit hooks:
+If you want to contribute, please install the pre-commit hooks (in the root folder with git and with the enviromnent activated):
 ```
 pre-commit install
 ```
+This installs hooks to /.git/hooks
+
 and run it once against the code:
 ```
 pre-commit run --all-files
@@ -81,6 +83,13 @@ This project tries to use the [gitflow](https://github.com/nvie/gitflow) workflo
 * feature/*
 * release/*
 * hotfixe
+
+To use it, please [install git-flow](https://skoch.github.io/Git-Workflow/), then initialize the project:
+```
+git flow init
+```
+select the default values for the names.
+
 
 Articles to get started:
 
