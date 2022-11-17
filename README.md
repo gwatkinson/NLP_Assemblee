@@ -4,6 +4,17 @@ This repository contains the NLP project for the Deep Learning course of the MVA
 
 This is a group project with Gabriel Watkinson and Jéremie Stym-Popper.
 
+<!-- toc -->
+
+- [Problematic](#problematic)
+- [Contributing](#contributing)
+    * [Clone the repository](#clone-the-repository)
+    * [Create conda enviromnent](#create-conda-enviromnent)
+    * [Pre-commit](#pre-commit)
+    * [Git-Flow](#git-flow)
+
+<!-- tocstop -->
+
 ## Problematic
 
 This project aims to recreate a map of the French Assemblée Nationale, by classifying the deputees' political opinions on a range of subjects.
