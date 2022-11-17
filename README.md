@@ -78,9 +78,9 @@ This project tries to use the [gitflow](https://github.com/nvie/gitflow) workflo
 
 * main
 * develop
-* features/*
-* releases/*
-* hotfixes
+* feature/*
+* release/*
+* hotfixe
 
 Articles to get started:
 
