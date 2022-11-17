@@ -1,3 +1,5 @@
+# List of hooks at https://pre-commit.com/hooks.html.
+
 fail_fast: false
 default_stages: [commit, push]
 repos:
