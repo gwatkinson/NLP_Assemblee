@@ -20,6 +20,7 @@ class Dataset(torch.utils.data.Dataset):
         self.texts = [[tokenizer(text, 
                                padding='max_length', max_length = 512, truncation=True,
                                 return_tensors="pt")for text in interventions] for interventions in df['interventions']]
+        self.texts = torch.stack(self.texts)
 
     def classes(self):
         return self.labels
