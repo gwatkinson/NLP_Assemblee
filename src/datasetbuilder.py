@@ -84,10 +84,10 @@ def stockintervention(groupe):
 # and 50 interventions for each 
 # WARNING : take a long time, do not run it unless necessary
 
-interventions_df = pd.DataFrame(columns=["groupe", "nom", "session title", "session date", "interventions"])
+# interventions_df = pd.DataFrame(columns=["groupe", "nom", "session title", "session date", "interventions"])
 
-for groupe in groupes:
-    interventions_df = pd.concat([interventions_df, stockintervention(groupe)], ignore_index=True)
+# for groupe in groupes:
+#     interventions_df = pd.concat([interventions_df, stockintervention(groupe)], ignore_index=True)
 
-path = r"C:\Jérémie\Fac_Ensae\MVA\Cours\Deep learning\Projet\NLP_Assemblee\depinter2.csv"
-interventions_df.to_csv(path, index=False)
+# path = r"mypath"
+# interventions_df.to_csv(path, index=False)
