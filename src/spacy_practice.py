@@ -23,10 +23,9 @@ df["interventions_spacy"] = df['interventions_spacy'].apply(
     lambda words: [word for word in words if not word in stop_words]
 )
 
-# df.to_csv(r"C:\Jérémie\Fac_Ensae\MVA\Cours\Deep learning\Projet\NLP_Assemblee\df_spacy.csv", index=False)
+# df.to_csv(r"mypath" + "\df_spacy.csv", index=False)
 
-df_spacy = pd.read_csv("df_spacy.csv")
-
+df_spacy = pd.read_csv("dataframes/df_spacy.csv")
 
 texts = []
 for intervention in list(df.interventions):
