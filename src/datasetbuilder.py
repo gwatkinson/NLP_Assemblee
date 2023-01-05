@@ -90,4 +90,4 @@ def stockintervention(groupe):
 #     interventions_df = pd.concat([interventions_df, stockintervention(groupe)], ignore_index=True)
 
 # path = r"mypath"
-# interventions_df.to_csv(path, index=False)
+# interventions_df.to_csv(path + \depinter3.csv, index=False)
