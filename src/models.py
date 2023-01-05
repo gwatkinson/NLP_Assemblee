@@ -1,13 +1,15 @@
 from torch import nn
-from transformers import CamembertModel
+from transformers import CamembertModel, BertModel
 
-bert = CamembertModel.from_pretrained('camembert-base')
+# bert = CamembertModel.from_pretrained('camembert-base')
+
+bert = BertModel.from_pretrained("bert-base-multilingual-cased")
 
 class CamembertClassifier(nn.Module):
 
     def __init__(self, bert=bert, dropout=0.5, num_classes=11):
 
-        super(BertClassifier, self).__init__()
+        super(CamembertClassifier, self).__init__()
 
         self.bert = bert
         self.dropout = nn.Dropout(dropout)

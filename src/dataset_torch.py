@@ -2,25 +2,32 @@
 
 import torch
 import numpy as np
-from transformers import BertTokenizer
+from transformers import CamembertConfig, CamembertModel, CamembertTokenizer
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-labels = {'business':0,
-          'entertainment':1,
-          'sport':2,
-          'tech':3,
-          'politics':4
-          }
+
+tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
+tokenizer.pad_token = "[PAD]"
+
+labels = {'LR': 0,
+ 'GDR': 1,
+ 'REN': 2,
+ 'RN': 3,
+ 'MODEM': 4,
+ 'LFI': 5,
+ 'SOC': 6,
+ 'ECO': 7,
+ 'HOR': 8,
+ 'LIOT': 9,
+ 'NI': 10}
 
 class Dataset(torch.utils.data.Dataset):
 
-    def __init__(self, df, labels=labels, tokenizer=tokenizer):
+    def __init__(self, df, labels=labels, tokenizer=tokenizer, max_length=200):
 
         self.labels = [labels[label] for label in df['groupe']]
-        self.texts = [[tokenizer(text, 
-                               padding='max_length', max_length = 512, truncation=True,
-                                return_tensors="pt")for text in interventions] for interventions in df['interventions']]
-        self.texts = torch.stack(self.texts)
+        self.texts = [tokenizer(interventions, 
+                               padding='max_length', max_length = max_length, truncation=True,
+                                return_tensors="pt") for interventions in df['interventions']]
 
     def classes(self):
         return self.labels
