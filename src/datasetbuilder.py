@@ -84,10 +84,24 @@ def stockintervention(groupe):
 # and 50 interventions for each 
 # WARNING : take a long time, do not run it unless necessary
 
+# from ast import literal_eval
+
+# def convert_to_list(interventions):
+#     return literal_eval(str(interventions))
+
 # interventions_df = pd.DataFrame(columns=["groupe", "nom", "session title", "session date", "interventions"])
 
 # for groupe in groupes:
 #     interventions_df = pd.concat([interventions_df, stockintervention(groupe)], ignore_index=True)
 
+# interventions_df.drop(65, inplace=True)
+
+# interventions_df["interventions"] = interventions_df["interventions"].apply(convert_to_list)
+# interventions_df["session date"] = interventions_df["session date"].apply(convert_to_list)
+# interventions_df["session title"] = interventions_df["session title"].apply(convert_to_list)
+
+# interventions_df_tidy = interventions_df.explode(["session title", "session date", "interventions"], ignore_index=True)
+
+
 # path = r"mypath"
-# interventions_df.to_csv(path + \depinter3.csv, index=False)
+# interventions_df_tidy.to_csv(path + "\depinter_collapsed.csv", index=False)
