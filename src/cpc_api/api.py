@@ -95,10 +95,23 @@ class CPCApi(object):
         url = "https://www.nosdeputes.fr/recherche?object_name=Intervention&tag=parlementaire%3D{0}&sort=1".format(name_pattern)
         source = request.urlopen(url).read()            
         page = bs4.BeautifulSoup(source, "lxml")
-        for x in page.find_all('p', {'class' : 'content'}):
+        for x in page.find_all('p', {'class':'content'}):
             dep_intervention += x
 
         return dep_intervention
+
+    def session_title(self, dep_name):
+        """Get the session title during a deputy intervention"""
+        name = self.search_parlementaires(dep_name)[0][0]["nom"]
+        name_pattern = re.sub(' ', '+', unidecode.unidecode(name.lower()))
+        title_session = []
+        url = "https://www.nosdeputes.fr/recherche?object_name=Intervention&tag=parlementaire%3D{0}&sort=1".format(name_pattern)
+        source = request.urlopen(url).read()            
+        page = bs4.BeautifulSoup(source, "lxml")
+        for title in page.find_all('h4'):
+            title_session.append(title.get_text())
+
+        return title_session
 
     def liste_mots(self, dep_name):
         name = self.search_parlementaires(dep_name)[0][0]["nom"]
