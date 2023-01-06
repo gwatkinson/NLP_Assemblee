@@ -3,10 +3,6 @@
 fail_fast: false
 default_stages: [commit, push]
 repos:
-# -   repo: https://github.com/jorisroovers/gitlint
-#     rev:  v0.18.0
-#     hooks:
-#     -   id: gitlint
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
@@ -58,12 +54,12 @@ repos:
         args: ["--line-length=100"]
       - id: nbqa-isort
         args: ["--profile=black"]
--   repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.3.1
-    hooks:
-    -   id: insert-license
-        files: \.py$
-        args: [ --license-filepath, disclaimer.txt ]
+# -   repo: https://github.com/Lucas-C/pre-commit-hooks
+#     rev: v1.3.1
+#     hooks:
+#     -   id: insert-license
+#         files: \.py$
+#         args: [ "--license-filepath", "env_file/disclaimer.txt" ]
 -   repo: https://github.com/Lucas-C/pre-commit-hooks-nodejs
     rev: v1.1.2
     hooks:
