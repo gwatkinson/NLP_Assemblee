@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+# Copyright (c) 2022 Gabriel WATKINSON and Jéremie STYM-POPPER
+# SPDX-License-Identifier: MIT
+
 import pandas as pd
 from src.cpc_api.api import CPCApi
+
 # sometimes, use src.cpc_api.api or just cpc_api.api
 # ignore the warning
 
@@ -18,36 +22,38 @@ def deputies_of_group(group, n_deputies):
     all_names = deputies_df[deputies_df["groupe_sigle"] == group]["nom"]
     return all_names[:n_deputies]
 
+
 def title_spliter(title_interventions):
     titles = []
     dates = []
     for text in title_interventions:
-            
-        if ':' in text:
-            date, title = text.split(' : ')
-        elif '-' in text:
-            title, date = text.split(' - ')
+
+        if ":" in text:
+            date, title = text.split(" : ")
+        elif "-" in text:
+            title, date = text.split(" - ")
         else:
-            raise ValueError('Title not compliant')        
+            raise ValueError("Title not compliant")
         titles.append(title)
-        
+
         if " le " in date:
-            dates.append(date.split(' le ')[1])
+            dates.append(date.split(" le ")[1])
         elif " du " in date:
-            dates.append(date.split(' du ')[1])
+            dates.append(date.split(" du ")[1])
         else:
             raise ValueError("Date format not compliant")
 
     return titles, dates
-    
+
+
 def interventions_of_group(group, n_deputies=15):
     """
     Return a list of 50 interventions by deputy of one group.
     Presented: acronym of the group, name of deputy, 50 interventions (list of str)
     Args: group (str) Acronym of the group
-        n_deputies: (int) max number of selected deputies in the group. 
+        n_deputies: (int) max number of selected deputies in the group.
         no problem if it is larger than the number of deputies
-    
+
     Return: a 3 column dataframe [group, deputy's name, 50 interventions]
     """
     names = deputies_of_group(group, n_deputies)
@@ -61,27 +67,27 @@ def interventions_of_group(group, n_deputies=15):
         interventions += [[group, name, session_title, session_date, list_interventions]]
     return interventions
 
+
 def stockintervention(groupe):
-    """
-    Same as above but without limit of the number of deputies
-    (takes them all). Could be a long process
+    """Same as above but without limit of the number of deputies (takes them
+    all). Could be a long process.
 
     Return: a 3 column dataframe [group, deputy's name, 50 interventions]
     """
     interventions_group = []
-    nbdep = deputies_df.groupby('groupe_sigle')['nom'].count()[str(groupe)]
+    nbdep = deputies_df.groupby("groupe_sigle")["nom"].count()[str(groupe)]
     print(nbdep)
     interventions_group += interventions_of_group(groupe, nbdep)
     interventions_df = pd.DataFrame(
         interventions_group,
-        columns=["groupe", "nom", "session title", "session date", "interventions"]
-        )
-    
+        columns=["groupe", "nom", "session title", "session date", "interventions"],
+    )
+
     return interventions_df
 
 
 #### This part to create a huge dataframe with all deputies, all groups
-# and 50 interventions for each 
+# and 50 interventions for each
 # WARNING : take a long time, do not run it unless necessary
 
 # from ast import literal_eval
