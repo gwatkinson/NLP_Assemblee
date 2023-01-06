@@ -86,7 +86,7 @@ def stockintervention(groupe):
     return interventions_df
 
 
-#### This part to create a huge dataframe with all deputies, all groups
+# This part to create a huge dataframe with all deputies, all groups
 # and 50 interventions for each
 # WARNING : take a long time, do not run it unless necessary
 
