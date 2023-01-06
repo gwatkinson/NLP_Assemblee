@@ -45,18 +45,23 @@ To create the conda enviromnent named `YOURENV`, choose your platform and use th
 
 Create conda enviromnent for Linux-64:
 ```
-conda create --name YOURENV --file conda-linux-64.lock
+conda create --name YOURENV --file env_file/conda-linux-64.lock
 ```
 
 Create conda enviromnent for Windows-64:
 ```
-conda create --name YOURENV --file conda-win-64.lock
+conda create --name YOURENV --file env_file/conda-win-64.lock
 ```
 This can take a while since there are many packages that are quite big (namely pytorch).
 
 You can then activate the enviromnent:
 ```
 conda activate YOURENV
+```
+
+To generate the lock file from `environment.yml`, run:
+```
+conda-lock -k explicit --conda mamba
 ```
 
 ### Pre-commit
