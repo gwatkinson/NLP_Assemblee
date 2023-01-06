@@ -1,33 +1,45 @@
+# Copyright (c) 2022 Gabriel WATKINSON and Jéremie STYM-POPPER
+# SPDX-License-Identifier: MIT
+
 # model Bert
 
 import torch
 import numpy as np
-from transformers import CamembertConfig, CamembertModel, CamembertTokenizer
+from transformers import CamembertTokenizer
 
 
-tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
+tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
 tokenizer.pad_token = "[PAD]"
 
-labels = {'LR': 0,
- 'GDR': 1,
- 'REN': 2,
- 'RN': 3,
- 'MODEM': 4,
- 'LFI': 5,
- 'SOC': 6,
- 'ECO': 7,
- 'HOR': 8,
- 'LIOT': 9,
- 'NI': 10}
+labels = {
+    "LR": 0,
+    "GDR": 1,
+    "REN": 2,
+    "RN": 3,
+    "MODEM": 4,
+    "LFI": 5,
+    "SOC": 6,
+    "ECO": 7,
+    "HOR": 8,
+    "LIOT": 9,
+    "NI": 10,
+}
+
 
 class Dataset(torch.utils.data.Dataset):
-
     def __init__(self, df, labels=labels, tokenizer=tokenizer, max_length=200):
 
-        self.labels = [labels[label] for label in df['groupe']]
-        self.texts = [tokenizer(interventions, 
-                               padding='max_length', max_length = max_length, truncation=True,
-                                return_tensors="pt") for interventions in df['interventions']]
+        self.labels = [labels[label] for label in df["groupe"]]
+        self.texts = [
+            tokenizer(
+                interventions,
+                padding="max_length",
+                max_length=max_length,
+                truncation=True,
+                return_tensors="pt",
+            )
+            for interventions in df["interventions"]
+        ]
 
     def classes(self):
         return self.labels
