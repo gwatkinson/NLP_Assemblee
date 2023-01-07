@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 import pandas as pd
-from src.cpc_api.api import CPCApi
+from nlp_assemblee_assemblee.cpc_api.api import CPCApi
 
 # sometimes, use src.cpc_api.api or just cpc_api.api
 # ignore the warning

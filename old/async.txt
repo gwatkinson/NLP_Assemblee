@@ -1,0 +1,77 @@
+
+
+    # def async_fetch_interventions_of_deputy(self, dep_intervention_list, slug_name=None, max_interventions=1000, verbose=True, save="./data/"):
+    #     """Fetches the interventions from the API.
+
+    #     Args:
+    #         dep_intervention_list: A list of interventions.
+    #             Returned from the `get_deputy_interventions_list` method.
+    #         max_interventions: The maximum number of interventions to fetch.
+    #             Default: 1000.
+    #         verbose: Whether to display a progress bar.
+    #             Default: True.
+
+    #     Returns:
+    #         A list of interventions.
+    #     """
+    #     # Initialize an empty list to store the interventions
+    #     interventions = {
+    #         "start": dep_intervention_list["start"],
+    #         "end": dep_intervention_list["end"],
+    #         "last_result": dep_intervention_list["last_result"],
+    #         "interventions": []
+    #     }
+
+    #     inters = dep_intervention_list["results"][:max_interventions] if max_interventions else dep_intervention_list["results"]
+    #     urls = [intervention["document_url"] for intervention in inters]
+
+    #     def process_response(response):
+    #         return response.json()["intervention"]
+
+    #     # Fetch the interventions from the API
+    #     pbar = tqdm(urls, leave=False) if verbose else urls
+    #     for url in pbar:
+    #         action_item = async.get(url, hooks = {'response': process_response})
+    #         interventions["interventions"].append(action_item)
+
+    #     if save and slug_name:
+    #         path = Path(save) / self.legislature_name / f"{slug_name}.json"
+    #         path.mkdir(parents=True, exist_ok=True)
+    #         with open(path, 'w') as f:
+    #             json.dump(interventions, f)
+
+    #     return interventions
+
+    async def async_fetch_interventions_of_deputy_3(
+        self,
+        dep_urls,
+        slug_name=None,
+        max_interventions=1000,
+        verbose=True,
+        save="./data/"
+        ):
+        # Initialize an empty list to store the interventions
+        interventions = {
+            "start": dep_urls["start"],
+            "end": dep_urls["end"],
+            "last_result": dep_urls["last_result"],
+            "interventions": []
+        }
+        inters = dep_urls["results"][:max_interventions] if max_interventions else dep_urls["results"]
+        urls = [intervention["document_url"] for intervention in inters]
+        pbar = tqdm(urls, leave=False) if verbose else urls
+
+        async with aiohttp.ClientSession() as session:
+            # Fetch the interventions from the API
+            for url in pbar:
+                async with session.get(url) as resp:
+                    action_item = await resp.json(content_type=None)
+                    interventions["interventions"].append(action_item["intervention"])
+
+        if save and slug_name:
+            path = Path(save) / self.legislature_name
+            path.mkdir(parents=True, exist_ok=True)
+            with open(path / f"{slug_name}.json", 'w') as f:
+                json.dump(interventions, f)
+
+        return interventions
