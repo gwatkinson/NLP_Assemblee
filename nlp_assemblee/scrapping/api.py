@@ -7,24 +7,22 @@ These APIs provide information about French parliamentary deputies, such
 as their names, parties, and parliamentary interventions.
 """
 
-import requests
+import asyncio
+import json
+import re
+import time
+import warnings
+from glob import glob
+from pathlib import Path
+from urllib import request
 
 # from grequests import async
 import aiohttp
-import asyncio
-import warnings
-from glob import glob
-import time
-
-
-import json
-import re
 import bs4
 import pandas as pd
-from urllib import request
+import requests
 import unidecode
 from tqdm.autonotebook import tqdm
-from pathlib import Path
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=UserWarning)

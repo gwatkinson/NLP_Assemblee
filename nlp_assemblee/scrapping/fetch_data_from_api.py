@@ -16,11 +16,13 @@ Examples:
         $ python src/scrapping/fetch_data_from_api.py --legislature="2017-2022" --verbose=1
 """
 
-import click
 import pickle
+from pathlib import Path
+
+import click
 import pandas as pd
 from tqdm.autonotebook import tqdm
-from pathlib import Path
+
 from nlp_assemblee.scrapping.api import CPCApi
 
 

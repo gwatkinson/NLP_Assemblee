@@ -5,13 +5,13 @@
 
 # In this section, we train our own model with gensim
 
+import fr_core_news_md
 import pandas as pd
-from spacy.pipeline.tok2vec import DEFAULT_TOK2VEC_MODEL
 import spacy
+from spacy.pipeline.tok2vec import DEFAULT_TOK2VEC_MODEL
 
 # First, run command: python -m spacy download fr_core_news_md
 
-import fr_core_news_md
 
 sp = spacy.load("fr_core_news_md")
 df = pd.read_csv("depinter_collapsed.csv")

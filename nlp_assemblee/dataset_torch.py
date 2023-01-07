@@ -3,10 +3,9 @@
 
 # model Bert
 
-import torch
 import numpy as np
+import torch
 from transformers import CamembertTokenizer
-
 
 tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
 tokenizer.pad_token = "[PAD]"
