@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "nlp-assemblee"
+version = "0.0.1"
+description = "NLP project on data from the French Assemblée Nationale."
+authors = [
+    "Gabriel Watkinson <gabriel.watkinson@gmail.com>",
+    "Jérémie Stym-Popper <jeremie.stym-popper@ensae.fr>"
+]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "nlp_assemblee"}]
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.scripts]
+scrap_data = "nlp_assemblee.scrapping.fetch_data_from_api:main"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

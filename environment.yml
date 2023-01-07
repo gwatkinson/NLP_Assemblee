@@ -53,6 +53,7 @@ dependencies:
   - lxml=4.9
   - unidecode=1
   - fuzzywuzzy=0.18
+  - aiohttp
 
 
 # Non-standard section listing target platforms for conda-lock:
