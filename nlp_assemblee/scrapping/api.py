@@ -13,6 +13,8 @@ import requests
 import aiohttp
 import asyncio
 import warnings
+from glob import glob
+import time
 
 
 import json
@@ -80,98 +82,6 @@ class CPCApi(object):
         # Create the dataframe of deputies and the name of the groups
         self.get_deputies_df()  # creates self.deputies_df and self.groups and self.deputies
 
-    def synthese(self, month=None):
-        """Retrieves a summary of parliamentary activity.
-
-        Args:
-            month: The month for which to retrieve the summary (default: None).
-                The month should be in the format "YYYYMM".
-
-        Returns:
-            A list of dictionaries, each containing information about a parliamentarian.
-
-        Raises:
-            AssertionError: If `month` is None and the legislature is "2012-2017".
-        """
-        # Check if the month is specified and if the legislature is "2012-2017"
-        if month is None and self.legislature == "2012-2017":
-            # Raise an error if both conditions are true
-            raise AssertionError(
-                "Global Synthesis on legislature does not work,"
-                + "see https://github.com/regardscitoyens/nosdeputes.fr/issues/69"
-            )
-
-        # Set the month to "data" if it is not specified
-        if month is None:
-            month = "data"
-
-        # Retrieve the summary from the API
-        url = f"{self.base_url}/synthese/{month}/{self.format}"
-        data = requests.get(url).json()
-
-        # Extract the parliamentarians from the response and return them
-        return [depute[self.ptype] for depute in data[self.ptype_plural]]
-
-    def parlementaire(self, slug_name):
-        """Retrieves information about a parliamentarian.
-
-        Args:
-            slug_name: The slug name of the parliamentarian.
-
-        Returns:
-            A dictionary of information about the parliamentarian.
-        """
-        # Build the URL for the parliamentarian's information
-        url = f"{self.base_url}/{slug_name}/{self.format}"
-
-        # Retrieve the information from the API and return it
-        return requests.get(url).json()[self.ptype]
-
-    def picture_url(self, slug_name, pixels="60"):
-        """Builds the URL for a picture of a parliamentarian.
-
-        Args:
-            slug_name: The slug name of the parliamentarian.
-            pixels: The size of the picture to retrieve (default: 60).
-
-        Returns:
-            The URL for the picture.
-        """
-        # Build the URL for the picture
-        return f"{self.base_url}/{self.ptype}/photo/{slug_name}/{pixels}"
-
-    def picture(self, slug_name, pixels="60"):
-        """Retrieves a picture of a parliamentarian.
-
-        Args:
-            slug_name: The slug name of the parliamentarian.
-            pixels: The size of the picture to retrieve (default: 60).
-
-        Returns:
-            A request object for the picture.
-        """
-        # Build the URL for the picture
-        url = self.picture_url(slug_name, pixels=pixels)
-
-        # Retrieve the picture from the API and return it
-        return requests.get(url)
-
-    def search(self, q, page=1):
-        """Searches for parliamentaries.
-
-        Args:
-            q: The query to search for.
-            page: The page of results to retrieve (default: 1).
-
-        Returns:
-            The raw data of the search results in CSV format.
-        """
-        # Build the URL
-        url = f"{self.base_url}/recherche/{q}?page={page}&format=csv"
-
-        # Retrieve the data from the API and return it
-        return requests.get(url).content
-
     @memoize
     def parlementaires(self, active=None):
         """Retrieves a list of parliamentaries.
@@ -192,6 +102,25 @@ class CPCApi(object):
         self.parlementaires_list = [depute[self.ptype] for depute in data[self.ptype_plural]]
 
         return self.parlementaires_list
+
+    def search_parlementaires(self, q, field="nom", limit=5):
+        """Searches for parliamentarians.
+
+        Args:
+            q: The query to search for.
+            field: The field of the parliamentarian data to search in (default: "nom").
+            limit: The maximum number of results to return (default: 5).
+
+        Returns:
+            A list of dictionaries, each containing information about a parliamentarian.
+        """
+        # Search for parliamentarians and return the best matches
+        return extractBests(
+            q,
+            self.parlementaires_list,
+            processor=lambda x: x[field] if type(x) == dict else x,
+            limit=limit,
+        )
 
     def get_deputies_df(self):
         """Retrieves a DataFrame of deputies information from the API.
@@ -224,28 +153,10 @@ class CPCApi(object):
         self.all_groups = deputies_df["groupe_sigle"].unique()
         self.deputies = deputies_df["nom"].unique()
 
-    def search_parlementaires(self, q, field="nom", limit=5):
-        """Searches for parliamentarians.
-
-        Args:
-            q: The query to search for.
-            field: The field of the parliamentarian data to search in (default: "nom").
-            limit: The maximum number of results to return (default: 5).
-
-        Returns:
-            A list of dictionaries, each containing information about a parliamentarian.
-        """
-        # Search for parliamentarians and return the best matches
-        return extractBests(
-            q,
-            self.parlementaires_list,
-            processor=lambda x: x[field] if type(x) == dict else x,
-            limit=limit,
-        )
-
-    def get_deputy_interventions_list(
+    async def get_deputy_interventions_list(
         self,
         dep_name,
+        session,
         count=500,
         object_name="Intervention",
         sort=0,
@@ -288,32 +199,40 @@ class CPCApi(object):
         url = f"{self.base_url}/recherche?object_name={object_name}&format={self.format}"
         url += f"&tag=parlementaire%3D{slug_name}&count={count}&sort={sort}"
         page_param = f"&page={page}"
+        last_int = count + 1
+        response = {"start": 1, "end": 0, "last_result": last_int, "results": []}
 
         # Retrieve the search results
-        response = requests.get(url + page_param).json()
+        while response["end"] < last_int:
+            page_param = f"&page={page}"
+            async with session.get(url + page_param) as resp:
+                try:
+                    tmp = await resp.json(content_type=None)
+                except Exception as e:
+                    print(e)
+                    return {
+                        "start": 1,
+                        "end": 0,
+                        "last_result": 0,
+                        "results": [],
+                    }
+                response["results"] += tmp["results"]
+                response["end"] = tmp["end"]
+                response["last_result"] = tmp["last_result"]
+
+            page += 1
+            if all_pages:
+                last_int = response["last_result"]
+            else:
+                last_int = min(max_interventions, response["last_result"])
+
         response["dep_name"] = dep_name
         response["slug_name"] = slug_name
         response["legislature"] = self.legislature_name
 
         return response
-        # Fetch other pages if necessary
-        if all_pages:
-            last_int = response["last_result"]
-        else:
-            last_int = min(max_interventions, response["last_result"])
 
-        response["last_result"]
-        while all_pages and response["end"] < last_int:
-            page += 1
-            page_param = f"&page={page}"
-
-            tmp = requests.get(url + page_param).json()
-            response["results"] += tmp["results"]
-            response["end"] = tmp["end"]
-
-        return response
-
-    def get_all_interventions_urls(
+    async def get_all_interventions_urls(
         self,
         all_pages=True,
         max_interventions=1000,
@@ -349,24 +268,35 @@ class CPCApi(object):
         deputies_list = {}
 
         # Get the interventions for each deputy
-        pbar = tqdm(self.deputies, leave=False) if verbose else self.deputies
-        for dep in pbar:
-            res = self.get_deputy_interventions_list(
-                dep_name=dep,
-                count=count,
-                object_name=object_name,
-                sort=sort,
-                page=page,
-                all_pages=all_pages,
-                max_interventions=max_interventions,
-            )
-            deputies_list[dep] = res
+        # pbar = tqdm(self.deputies, leave=False) if verbose else self.deputies
+
+        async with aiohttp.ClientSession(trust_env=True) as session:
+            tasks = []
+            for dep in self.deputies:
+                tmp = asyncio.ensure_future(
+                    self.get_deputy_interventions_list(
+                        dep_name=dep,
+                        session=session,
+                        count=count,
+                        object_name=object_name,
+                        sort=sort,
+                        page=page,
+                        all_pages=all_pages,
+                        max_interventions=max_interventions,
+                    )
+                )
+                tasks.append(tmp)
+
+            responses = await asyncio.gather(*tasks)
+
+        for dep, response in zip(self.deputies, responses):
+            deputies_list[dep] = response
 
         # Save the results to a file if save path is provided
         if save:
             path = Path(save)
             path_list = list(path.parts)
-            path_list.insert(-1, self.legislature_name)
+            path_list.insert(2, self.legislature_name)
             save_path = Path("").joinpath(*path_list[:-1])
             save_path.mkdir(parents=True, exist_ok=True)
             with open(save_path / path_list[-1], "w") as f:
@@ -375,61 +305,13 @@ class CPCApi(object):
 
         return deputies_list
 
-    def fetch_interventions_of_deputy(
-        self,
-        dep_intervention_list,
-        slug_name=None,
-        max_interventions=1000,
-        verbose=True,
-        save="./data/",
-    ):
-        """Fetches the interventions from the API.
-
-        Args:
-            dep_intervention_list: A list of interventions.
-                Returned from the `get_deputy_interventions_list` method.
-            max_interventions: The maximum number of interventions to fetch.
-                Default: 1000.
-            verbose: Whether to display a progress bar.
-                Default: True.
-
-        Returns:
-            A list of interventions.
-        """
-        # Initialize an empty list to store the interventions
-        interventions = {
-            "start": dep_intervention_list["start"],
-            "end": dep_intervention_list["end"],
-            "last_result": dep_intervention_list["last_result"],
-            "interventions": [],
-        }
-
-        inters = (
-            dep_intervention_list["results"][:max_interventions]
-            if max_interventions
-            else dep_intervention_list["results"]
-        )
-        # Fetch the interventions from the API
-        pbar = tqdm(inters, leave=False) if verbose else inters
-        for intervention in pbar:
-            response = requests.get(intervention["document_url"]).json()["intervention"]
-            interventions["interventions"].append(response)
-
-        if save and slug_name:
-            path = Path(save) / self.legislature_name / f"{slug_name}.json"
-            path.mkdir(parents=True, exist_ok=True)
-            with open(path, "w") as f:
-                json.dump(interventions, f)
-
-        return interventions
-
     @staticmethod
     async def process_response(session, url):
         async with session.get(url) as resp:
             action_item = await resp.json(content_type=None)
             return action_item["intervention"]
 
-    async def async_fetch_interventions_of_deputy_2(
+    async def async_fetch_interventions_of_deputy(
         self, dep_urls, slug_name=None, max_interventions=1000, verbose=True, save="./data/"
     ):
         # Initialize an empty list to store the interventions
@@ -446,7 +328,7 @@ class CPCApi(object):
         urls = [intervention["document_url"] for intervention in inters]
         pbar = tqdm(urls, leave=False) if verbose else urls
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             # Fetch the interventions from the API
             tasks = []
             for url in pbar:
@@ -456,12 +338,41 @@ class CPCApi(object):
             interventions["interventions"] = await asyncio.gather(*tasks)
 
         if save and slug_name:
-            path = Path(save) / self.legislature_name
+            path = Path(save) / self.legislature_name / "interventions"
             path.mkdir(parents=True, exist_ok=True)
             with open(path / f"{slug_name}.json", "w") as f:
                 json.dump(interventions, f)
 
         return interventions
+
+    async def async_fetch_all_interventions(self, urls, save="./data/", max_interventions=1000):
+        deps = self.deputies
+        slugs = [self.deputies_df[self.deputies_df["nom"] == dep]["slug"].values[0] for dep in deps]
+        files = glob(f"{save}/{self.legislature_name}/interventions/*.json")
+        files = [file.split("/")[-1].split(".")[0] for file in files]
+
+        idx = [i for i, slug in enumerate(slugs) if slug not in files]
+        deps = [deps[i] for i in idx]
+        slugs = [slugs[i] for i in idx]
+
+        for dep, slug in tqdm(zip(deps, slugs), total=len(idx)):
+            for attempt in range(10):
+                try:
+                    await self.async_fetch_interventions_of_deputy(
+                        dep_urls=urls[dep],
+                        slug_name=slug,
+                        max_interventions=max_interventions,
+                        verbose=False,
+                        save=save,
+                    )
+                except Exception as e:
+                    print(e)
+                    time.sleep(60)
+                else:
+                    break
+            else:
+                print(f"Failed to fetch {dep} after 10 attempts")
+                break
 
     def fetch_all_interventions(
         self,
@@ -557,3 +468,95 @@ class CPCApi(object):
             mots_dep.append(re.sub("\n", "", x.get_text()))
 
         return mots_dep
+
+    def picture_url(self, slug_name, pixels="60"):
+        """Builds the URL for a picture of a parliamentarian.
+
+        Args:
+            slug_name: The slug name of the parliamentarian.
+            pixels: The size of the picture to retrieve (default: 60).
+
+        Returns:
+            The URL for the picture.
+        """
+        # Build the URL for the picture
+        return f"{self.base_url}/{self.ptype}/photo/{slug_name}/{pixels}"
+
+    def picture(self, slug_name, pixels="60"):
+        """Retrieves a picture of a parliamentarian.
+
+        Args:
+            slug_name: The slug name of the parliamentarian.
+            pixels: The size of the picture to retrieve (default: 60).
+
+        Returns:
+            A request object for the picture.
+        """
+        # Build the URL for the picture
+        url = self.picture_url(slug_name, pixels=pixels)
+
+        # Retrieve the picture from the API and return it
+        return requests.get(url)
+
+    def synthese(self, month=None):
+        """Retrieves a summary of parliamentary activity.
+
+        Args:
+            month: The month for which to retrieve the summary (default: None).
+                The month should be in the format "YYYYMM".
+
+        Returns:
+            A list of dictionaries, each containing information about a parliamentarian.
+
+        Raises:
+            AssertionError: If `month` is None and the legislature is "2012-2017".
+        """
+        # Check if the month is specified and if the legislature is "2012-2017"
+        if month is None and self.legislature == "2012-2017":
+            # Raise an error if both conditions are true
+            raise AssertionError(
+                "Global Synthesis on legislature does not work,"
+                + "see https://github.com/regardscitoyens/nosdeputes.fr/issues/69"
+            )
+
+        # Set the month to "data" if it is not specified
+        if month is None:
+            month = "data"
+
+        # Retrieve the summary from the API
+        url = f"{self.base_url}/synthese/{month}/{self.format}"
+        data = requests.get(url).json()
+
+        # Extract the parliamentarians from the response and return them
+        return [depute[self.ptype] for depute in data[self.ptype_plural]]
+
+    def parlementaire(self, slug_name):
+        """Retrieves information about a parliamentarian.
+
+        Args:
+            slug_name: The slug name of the parliamentarian.
+
+        Returns:
+            A dictionary of information about the parliamentarian.
+        """
+        # Build the URL for the parliamentarian's information
+        url = f"{self.base_url}/{slug_name}/{self.format}"
+
+        # Retrieve the information from the API and return it
+        return requests.get(url).json()[self.ptype]
+
+    def search(self, q, page=1):
+        """Searches for parliamentaries.
+
+        Args:
+            q: The query to search for.
+            page: The page of results to retrieve (default: 1).
+
+        Returns:
+            The raw data of the search results in CSV format.
+        """
+        # Build the URL
+        url = f"{self.base_url}/recherche/{q}?page={page}&format=csv"
+
+        # Retrieve the data from the API and return it
+        return requests.get(url).content
