@@ -151,16 +151,70 @@ class CPCApi(object):
         self.all_groups = deputies_df["groupe_sigle"].unique()
         self.deputies = deputies_df["nom"].unique()
 
-    async def get_deputy_interventions_list(
+    @staticmethod
+    async def get_last_int_resp(session, url):
+        async with session.get(url) as resp:
+            return await resp.json(content_type=None)
+
+    async def get_last_int(self, save="./data/last_ints.json"):
+        last_ints = {}
+        deps = self.deputies
+        async with aiohttp.ClientSession(trust_env=True) as session:
+            tasks = []
+            for dep in deps:
+                name = self.search_parlementaires(dep)[0][0]["nom"]
+                slug_name = re.sub(" ", "+", unidecode.unidecode(name.lower()))
+
+                url = f"{self.base_url}/recherche?object_name=Intervention"
+                url += f"&format={self.format}"
+                url += f"&tag=parlementaire%3D{slug_name}"
+                url += "&sort=0"
+                url += "&page=1"
+                url += "&count=1"
+                tasks.append(asyncio.ensure_future(self.get_last_int_resp(session, url)))
+            responses = await asyncio.gather(*tasks)
+
+            for dep, resp in zip(deps, responses):
+                last_ints[dep] = resp["last_result"]
+
+        # Save the results to a file if save path is provided
+        if save:
+            path = Path(save)
+            path_list = list(path.parts)
+            path_list.insert(2, self.legislature_name)
+            save_path = Path("").joinpath(*path_list[:-1])
+            save_path.mkdir(parents=True, exist_ok=True)
+            with open(save_path / path_list[-1], "w") as f:
+                json.dump(last_ints, f)
+                self.last_ints_file = str(save_path / path_list[-1])
+
+        return last_ints
+
+    @staticmethod
+    async def urls_response(session, url, count_param, page_param):
+        async with session.get(url + count_param + page_param) as resp:
+            try:
+                tmp = await resp.json(content_type=None)
+            except Exception as e:
+                print(e)
+                return {
+                    "start": 1,
+                    "end": 0,
+                    "last_result": 0,
+                    "results": [],
+                }
+        return tmp
+
+    async def async_get_deputy_interventions_list(
         self,
         dep_name,
-        session,
-        count=500,
-        object_name="Intervention",
-        sort=0,
-        page=1,
         all_pages=False,
         max_interventions=1000,
+        count=500,
+        last_int=None,
+        sort=0,
+        page=1,
+        object_name="Intervention",
     ):
         """Retrieves the urls of the interventions of a parliamentarian.
 
@@ -195,42 +249,41 @@ class CPCApi(object):
 
         # Build the URL for the search
         url = f"{self.base_url}/recherche?object_name={object_name}&format={self.format}"
-        url += f"&tag=parlementaire%3D{slug_name}&count={count}&sort={sort}"
+        url += f"&tag=parlementaire%3D{slug_name}&sort={sort}"
         page_param = f"&page={page}"
-        last_int = count + 1
+        count_param = f"&count={count}"
+
+        if last_int is None:
+            tick = requests.get(url + "&count=0&page=1").json()["last_result"]
+
+            if all_pages:
+                last_int = tick
+            else:
+                last_int = min(max_interventions, tick)
+
         response = {"start": 1, "end": 0, "last_result": last_int, "results": []}
 
         # Retrieve the search results
-        while response["end"] < last_int:
-            page_param = f"&page={page}"
-            async with session.get(url + page_param) as resp:
-                try:
-                    tmp = await resp.json(content_type=None)
-                except Exception as e:
-                    print(e)
-                    return {
-                        "start": 1,
-                        "end": 0,
-                        "last_result": 0,
-                        "results": [],
-                    }
+        async with aiohttp.ClientSession(trust_env=True) as session:
+            tasks = []
+            for page in range(1, last_int // count + 2):
+                page_param = f"&page={page}"
+                tasks.append(
+                    asyncio.ensure_future(self.urls_response(session, url, count_param, page_param))
+                )
+            responses = await asyncio.gather(*tasks)
+
+            for tmp in responses:
                 response["results"] += tmp["results"]
                 response["end"] = tmp["end"]
-                response["last_result"] = tmp["last_result"]
 
-            page += 1
-            if all_pages:
-                last_int = response["last_result"]
-            else:
-                last_int = min(max_interventions, response["last_result"])
+            response["dep_name"] = dep_name
+            response["slug_name"] = slug_name
+            response["legislature"] = self.legislature_name
 
-        response["dep_name"] = dep_name
-        response["slug_name"] = slug_name
-        response["legislature"] = self.legislature_name
+            return response
 
-        return response
-
-    async def get_all_interventions_urls(
+    async def async_get_all_interventions_urls(
         self,
         all_pages=True,
         max_interventions=1000,
@@ -272,7 +325,7 @@ class CPCApi(object):
             tasks = []
             for dep in self.deputies:
                 tmp = asyncio.ensure_future(
-                    self.get_deputy_interventions_list(
+                    self.async_get_deputy_interventions_list(
                         dep_name=dep,
                         session=session,
                         count=count,
@@ -302,6 +355,58 @@ class CPCApi(object):
                 self.deputies_list_file = str(save_path / path_list[-1])
 
         return deputies_list
+
+    def fetch_urls_dep(
+        self,
+        dep_name,
+        all_pages=False,
+        max_interventions=1000,
+        count=500,
+        sort=0,
+        page=1,
+        save="./data/urls",
+    ):
+        if all_pages or max_interventions:
+            page = 1
+
+        # Remove accents and special characters from the name and replace spaces with +
+        name = self.search_parlementaires(dep_name)[0][0]["nom"]
+        slug_name = re.sub(" ", "+", unidecode.unidecode(name.lower()))
+
+        # Build the URL for the search
+        url = f"{self.base_url}/recherche?object_name=Intervention&format={self.format}"
+        url += f"&tag=parlementaire%3D{slug_name}&sort={sort}"
+        page_param = f"&page={page}"
+        count_param = f"&count={count}"
+
+        response = requests.get(url + count_param + page_param).json()
+
+        if all_pages:
+            last_int = response["last_result"]
+        else:
+            last_int = min(max_interventions, response["last_result"])
+
+        # Retrieve the search results
+        while response["end"] < last_int:
+            page += 1
+            page_param = f"&page={page}"
+
+            tmp = requests.get(url + count_param + page_param).json()
+
+            response["results"] += tmp["results"]
+            response["end"] = tmp["end"]
+
+        response["dep_name"] = dep_name
+        response["slug_name"] = slug_name
+        response["legislature"] = self.legislature_name
+
+        if save:
+            path = Path(save) / self.legislature_name / "urls"
+            path.mkdir(parents=True, exist_ok=True)
+            with open(path / f"{slug_name}.json", "w", encoding="utf-8") as f:
+                json.dump(response, f)
+
+        return response
 
     @staticmethod
     async def process_response(session, url):
@@ -353,6 +458,8 @@ class CPCApi(object):
         deps = [deps[i] for i in idx]
         slugs = [slugs[i] for i in idx]
 
+        print(f"Fetching {len(idx)} deputies' interventions... Instead of {len(self.deputies)}")
+
         for dep, slug in tqdm(zip(deps, slugs), total=len(idx)):
             for attempt in range(10):
                 try:
@@ -363,11 +470,10 @@ class CPCApi(object):
                         verbose=False,
                         save=save,
                     )
-                except Exception as e:
-                    print(e)
-                    time.sleep(60)
-                else:
                     break
+                except Exception as e:
+                    print(dep, e)
+                    time.sleep(60)
             else:
                 print(f"Failed to fetch {dep} after 10 attempts")
                 break
