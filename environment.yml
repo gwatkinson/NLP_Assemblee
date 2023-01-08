@@ -25,6 +25,7 @@ dependencies:
   - pytorch::torchaudio=0.13.0
   - pytorch::torchvision=0.14.0
   - pytorch::pytorch-cuda=11.7
+  - transformers
   # Other classic data and ML packages
   - numpy=1.23
   - pandas=1.5
