@@ -4,7 +4,7 @@ repo_url: https://github.com/gwatkinson/NLP_Assemblee/
 repo_name: gwatkinson/NLP_Assemblee
 site_description: NLP Project for the Deep Learning course of the MVA master
 site_author: Gabriel WATKINSON <gabriel.watkinson@ensae.fr>, Jéremie STYM-POPPER <jeremie.stym-popper@ensae.fr>
-copyright: MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
+copyright: Copyright &copy; MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
 
 # Set the structure of the site
 nav:
@@ -64,8 +64,17 @@ plugins:
 markdown_extensions:
   - abbr
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
   - def_list
   - footnotes
   - tables
   - toc:
       permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
