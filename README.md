@@ -10,6 +10,7 @@ This is a group project with Gabriel Watkinson and Jéremie Stym-Popper.
 - [Contributing](#contributing)
     * [Clone the repository](#clone-the-repository)
     * [Create conda enviromnent](#create-conda-enviromnent)
+    * [Development dependencies](#development-dependencies)
     * [Pre-commit](#pre-commit)
     * [Git-Flow](#git-flow)
 
@@ -62,6 +63,18 @@ conda activate YOURENV
 To generate the lock file from `environment.yml`, run:
 ```
 conda-lock -k explicit --conda mamba
+```
+
+### Development dependencies
+
+To install the development dependencies with poetry, run:
+```
+poetry install -C env_files/
+```
+
+Or with pip:
+```
+pip install -r env_files/dev_requirements.txt
 ```
 
 ### Pre-commit
