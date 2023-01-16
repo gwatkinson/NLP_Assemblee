@@ -1,3 +1,7 @@
+### Personal ignores ###
+models
+checkpoints
+lightning_logs
 data
 # dataframes
 
