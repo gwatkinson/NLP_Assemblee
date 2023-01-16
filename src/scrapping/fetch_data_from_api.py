@@ -21,8 +21,9 @@ from pathlib import Path
 
 import click
 import pandas as pd
-from nlp_assemblee.scrapping.api import CPCApi
 from tqdm.autonotebook import tqdm
+
+from src.scrapping.api import CPCApi
 
 
 # Intermediary functions
