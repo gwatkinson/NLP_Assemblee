@@ -505,7 +505,7 @@ class CPCApi(object):
             deputies_list = json.load(f)
 
         # Fetch the interventions from the API
-        # deputies_interventions = {}
+        deputies_interventions = {}
 
         pbar = tqdm(deputies_list, leave=False) if verbose[0] else deputies_list
         for dep in pbar:
@@ -519,33 +519,21 @@ class CPCApi(object):
                 verbose=verbose[1],
                 save=save,
             )
-            # deputies_interventions[dep] = self.fetch_interventions_of_deputy(
-            # urls, max_interventions=max_interventions, verbose=verbose[1], save=save)
+            deputies_interventions[dep] = self.fetch_interventions_of_deputy(
+                urls, max_interventions=max_interventions, verbose=verbose[1], save=save
+            )
 
-        # # Save the results to a file if save path is provided
-        # if save:
-        #     path = Path(save)
-        #     path_list = path.parts
-        #     path_list.insert(-1, self.legislature_name)
-        #     save_path = Path('').joinpath(*path_list)
-        #     with open(save_path, 'w') as f:
-        #         json.dump(deputies_interventions, f)
-        #         self.interventions_file = save_path
+        # Save the results to a file if save path is provided
+        if save:
+            path = Path(save)
+            path_list = path.parts
+            path_list.insert(-1, self.legislature_name)
+            save_path = Path("").joinpath(*path_list)
+            with open(save_path, "w") as f:
+                json.dump(deputies_interventions, f)
+                self.interventions_file = save_path
 
-        # return deputies_interventions
-
-    # def interventions(self, dep_name):
-    #     name = self.search_parlementaires(dep_name)[0][0]["nom"]
-    #     name_pattern = re.sub(" ", "+", unidecode.unidecode(name.lower()))
-    #     dep_intervention = []
-    #     url = f"{self.base_url}/recherche?object_name=
-    # Intervention&tag=parlementaire%3D{name_pattern}&sort=1"
-    #     source = request.urlopen(url).read()
-    #     page = bs4.BeautifulSoup(source, "lxml")
-    #     for x in page.find_all("p", {"class": "content"}):
-    #         dep_intervention += x
-
-    #     return dep_intervention
+        return deputies_interventions
 
     def session_title(self, dep_name):
         """Get the session title during a deputy intervention."""
