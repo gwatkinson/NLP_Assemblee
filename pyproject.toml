@@ -9,6 +9,8 @@ authors = [
 license = "MIT"
 readme = "README.md"
 
+packages = [{include = "nlp_assemblee"}]
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
