@@ -1,7 +1,8 @@
 # Configure the site
 site_name: NLP and French politic
-repo_url: https://github.com/gwatkinson/NLP_Assemblee/
+repo_url: https://github.com/gwatkinson/NLP_Assemblee
 repo_name: gwatkinson/NLP_Assemblee
+docs_dir: docs
 site_description: NLP Project for the Deep Learning course of the MVA master
 site_author: Gabriel WATKINSON <gabriel.watkinson@ensae.fr>, Jéremie STYM-POPPER <jeremie.stym-popper@ensae.fr>
 copyright: Copyright &copy; MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
@@ -10,8 +11,8 @@ copyright: Copyright &copy; MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
 nav:
   - Home: index.md
   - Getting the Data:
-      - API: api.md
-      - Fetch the data: ../notebooks/scrapping.ipynb
+      - API: api/api.md
+      - Fetch the data: api/scrapping.ipynb
 
 # Set the theme
 theme:

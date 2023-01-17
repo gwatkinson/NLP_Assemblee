@@ -15,8 +15,8 @@ There are mutliple distinct parts in this project.
 
 First of all, we made use of an API made available by [nosdeputes.fr](https://www.nosdeputes.fr) to fetch the textual retranscription of every session at the French Assemblée Nationale.
 
-* The API class is available in the [api.py](api.md) module.
-* Then, we used a notebook [scrapping.ipynb](notebooks/scrapping.md) to fetch the data using the API.
+* The API class is available in the [api.py](api/api.md) module.
+* Then, we used a notebook [`scrapping.ipynb`](api/scrapping.ipynb) to fetch the data using the API.
 
 ### Building the Models
 
