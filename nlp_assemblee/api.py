@@ -14,11 +14,9 @@ import time
 import warnings
 from glob import glob
 from pathlib import Path
-from urllib import request
 
 # from grequests import async
 import aiohttp
-import bs4
 import pandas as pd
 import requests
 import unidecode
@@ -27,8 +25,6 @@ from tqdm.autonotebook import tqdm
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=UserWarning)
     from fuzzywuzzy.process import extractBests
-
-__all__ = ["CPCApi"]
 
 
 def memoize(f):
@@ -108,7 +104,8 @@ class CPCApi(object):
             active (bool): Whether to retrieve active parliamentaries or not.
 
         Returns:
-            parlementaires_list (list): A list of parliamentaries. This also creates the attribute self.parlementaires_list.
+            parlementaires_list (list): A list of parliamentaries. This also creates the attribute
+                self.parlementaires_list.
 
         Creates:
             self.parlementaires_list : A list of all parliamentaries
@@ -305,8 +302,8 @@ class CPCApi(object):
             save (str, optional): The file path to save the results to.
 
         Returns:
-            deputies_list (dict): A dictionary where the keys are deputy names and the values are lists of URLs
-                for their interventions.
+            deputies_list (dict): A dictionary where the keys are deputy names and the values
+                are lists of URLs for their interventions.
         """
         deputies_list = {}
 
@@ -412,14 +409,14 @@ class CPCApi(object):
         for each deputy.
 
         Args:
-            urls (dict): A dictionary where the keys are deputy names and the values are lists of URLs
-                for their interventions.
+            urls (dict): A dictionary where the keys are deputy names and the values are lists of
+                URLs for their interventions.
             save (str): The file path to save the results to.
             max_interventions (int): The maximum number of interventions to fetch for each deputy.
 
         Returns:
-            interventions_dict (dict): A dictionary where the keys are the deputy names and the values
-                are lists of their interventions.
+            interventions_dict (dict): A dictionary where the keys are the deputy names and the
+                values are lists of their interventions.
         """
         deps = self.deputies
         slugs = [self.deputies_df[self.deputies_df["nom"] == dep]["slug"].values[0] for dep in deps]
