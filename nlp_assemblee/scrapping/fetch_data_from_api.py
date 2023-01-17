@@ -23,7 +23,7 @@ import click
 import pandas as pd
 from tqdm.autonotebook import tqdm
 
-from src.scrapping.api import CPCApi
+from nlp_assemblee.scrapping.api import CPCApi
 
 
 # Intermediary functions
