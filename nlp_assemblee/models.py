@@ -1,21 +1,61 @@
 # Copyright (c) 2022 Gabriel WATKINSON and Jéremie STYM-POPPER
 # SPDX-License-Identifier: MIT
 
+import torch
 import torch.nn.functional as F
 from torch import nn
-from transformers import CamembertModel
+from transformers import BertModel, CamembertModel
 
-# from transformers import BertModel
 
-# bert = BertModel.from_pretrained("bert-base-multilingual-cased")
-camembert_model = CamembertModel.from_pretrained("camembert-base")
+class BertLinear(nn.Module):
+    """Linear layer after a BERT layer."""
+
+    def __init__(self, bert_type, frozen, linear_dim, name=None):
+        self.bert_type = bert_type
+        self.frozen = frozen
+        self.linear_dim = linear_dim
+        self.name = name or f"{'frozen_' if frozen else ''}{bert_type}_linear_{linear_dim}"
+        if bert_type == "bert":
+            self.bert = BertModel.from_pretrained("bert-base-multilingual-cased")
+        elif bert_type == "camembert":
+            self.bert = CamembertModel.from_pretrained("camembert-base")
+        if frozen:
+            for param in self.bert.parameters():
+                param.requires_grad = False
+        self.bert_dim = self.bert.config.hidden_size
+        if linear_dim > 0:
+            self.linear = nn.Linear(self.bert_dim, linear_dim)
+
+    def forward(self, input_ids, attention_mask):
+        pooled_output = self.bert_model(
+            input_ids=input_ids, attention_mask=attention_mask, return_dict=False
+        )  # (batch_size, nb_int, bert_dim)
+
+        if self.linear_dim > 0:
+            pooled_output = self.linear(pooled_output)
+
+        return pooled_output
+
+
+class ConcatLayer(nn.Module):
+    """Concatenate the outputs of the BertLinear layers."""
+
+    def __init__(self, concat_type, name=None):
+        self.concat_type = concat_type
+        self.name = name or f"concat_{concat_type}"
+
+    def forward(self, *bert_linear_outputs):
+        if self.concat_type == "mean":
+            return torch.mean(torch.stack(bert_linear_outputs), dim=0)
+        elif self.concat_type == "concat":
+            return torch.cat(bert_linear_outputs, dim=2)
 
 
 class SimpleCamembertClassifier(nn.Module):
     def __init__(
         self,
+        bert_model,
         num_classes=11,
-        bert_model=camembert_model,
         bert_dim=768,
         input_dim=256,
         embed_dim=256,
