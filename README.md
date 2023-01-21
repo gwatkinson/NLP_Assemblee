@@ -28,7 +28,6 @@ This project aims to recreate a map of the French Assemblée Nationale, by class
 
 We have a [https://gwatkinson.github.io/NLP_Assemblee/](https://gwatkinson.github.io/NLP_Assemblee/), hosted with GitHub Pages, with the documentation of the project.
 
-
 ## Replicating the Results
 
 To install the dependencies needed for running the code locally, follow the next steps:
@@ -36,12 +35,15 @@ To install the dependencies needed for running the code locally, follow the next
 ### Clone the Repository
 
 Clone the repository with the command:
+
 ```bash
 git clone https://github.com/gwatkinson/NLP_Assemblee.git
 ```
+
 Or download the zip from the [github](https://github.com/gwatkinson/NLP_Assemblee) and unzip it where you want.
 
 Then, move into it:
+
 ```bash
 cd NLP_Assemblee
 ```
@@ -53,23 +55,28 @@ Make sure you have conda or [miniconda](https://docs.conda.io/en/latest/minicond
 To create the conda enviromnent named `YOURENV`, choose your platform and use the following commands:
 
 Create conda enviromnent for Linux-64:
-```
+
+```bash
 conda create --name YOURENV --file env_file/conda-linux-64.lock
 ```
 
 Create conda enviromnent for Windows-64:
-```
+
+```bash
 conda create --name YOURENV --file env_file/conda-win-64.lock
 ```
+
 This can take a while since there are many packages that are quite big (namely pytorch).
 
 You can then activate the enviromnent:
-```
+
+```bash
 conda activate YOURENV
 ```
 
 To generate the lock file from `environment.yml`, run:
-```
+
+```bash
 conda-lock -k explicit --conda mamba
 ```
 
@@ -81,25 +88,30 @@ And we used [git-flow](https://github.com/nvie/gitflow) to manage the different 
 ### Formatters, Linters and Documentation
 
 To install the development dependencies with poetry, run:
-```
+
+```bash
 poetry install -C env_files/
 ```
 
 Or with pip:
-```
+
+```bash
 pip install -r env_files/dev_requirements.txt
 ```
 
 ### Pre-commit
 
 If you want to contribute, please install the pre-commit hooks (in the root folder with git and with the enviromnent activated):
-```
+
+```bash
 pre-commit install
 ```
+
 This installs hooks to /.git/hooks
 
 and run it once against the code:
-```
+
+```bash
 pre-commit run --all-files
 ```
 
@@ -109,20 +121,21 @@ This will run some formatters and other hooks before each commit.
 
 This project tries to use the [gitflow](https://github.com/nvie/gitflow) workflow. It relies on multiple branches:
 
-* main
-* develop
-* feature/*
-* release/*
-* hotfixe
+- main
+- develop
+- feature/*
+- release/*
+- hotfixe
 
 To use it, please [install git-flow](https://skoch.github.io/Git-Workflow/), then initialize the project:
-```
+
+```bash
 git flow init
 ```
-select the default values for the names.
 
+select the default values for the names.
 
 Articles to get started:
 
-* https://jeffkreeftmeijer.com/git-flow/
-* https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
+- [https://jeffkreeftmeijer.com/git-flow/](https://jeffkreeftmeijer.com/git-flow/)
+- [https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
