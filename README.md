@@ -1,4 +1,6 @@
-# NLP and French politic
+# NLP and French Politics
+
+[![Website shields.io](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://gwatkinson.github.io/NLP_Assemblee/)  [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/gwatkinson/NLP_Assemblee/blob/main/LICENSE)
 
 This repository contains the NLP project for the Deep Learning course of the MVA.
 
@@ -7,9 +9,12 @@ This is a group project with Gabriel Watkinson and Jéremie Stym-Popper.
 <!-- toc -->
 
 - [Problematic](#problematic)
-- [Contributing](#contributing)
-    * [Clone the repository](#clone-the-repository)
-    * [Create conda enviromnent](#create-conda-enviromnent)
+- [Documentation](#documentation)
+- [Replicating the Results](#replicating-the-results)
+    * [Clone the Repository](#clone-the-repository)
+    * [Create a Conda Enviromnent](#create-a-conda-enviromnent)
+- [Development dependencies](#development-dependencies)
+    * [Formatters, Linters and Documentation](#formatters-linters-and-documentation)
     * [Pre-commit](#pre-commit)
     * [Git-Flow](#git-flow)
 
@@ -19,12 +24,16 @@ This is a group project with Gabriel Watkinson and Jéremie Stym-Popper.
 
 This project aims to recreate a map of the French Assemblée Nationale, by classifying the deputees' political opinions on a range of subjects.
 
+## Documentation
 
-## Contributing
+We have a [https://gwatkinson.github.io/NLP_Assemblee/](https://gwatkinson.github.io/NLP_Assemblee/), hosted with GitHub Pages, with the documentation of the project.
+
+
+## Replicating the Results
 
 To install the dependencies needed for running the code locally, follow the next steps:
 
-### Clone the repository
+### Clone the Repository
 
 Clone the repository with the command:
 ```bash
@@ -37,7 +46,7 @@ Then, move into it:
 cd NLP_Assemblee
 ```
 
-### Create conda enviromnent
+### Create a Conda Enviromnent
 
 Make sure you have conda or [miniconda](https://docs.conda.io/en/latest/miniconda.html) installed (see [here](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html) for instructions to install conda).
 
@@ -45,18 +54,40 @@ To create the conda enviromnent named `YOURENV`, choose your platform and use th
 
 Create conda enviromnent for Linux-64:
 ```
-conda create --name YOURENV --file conda-linux-64.lock
+conda create --name YOURENV --file env_file/conda-linux-64.lock
 ```
 
 Create conda enviromnent for Windows-64:
 ```
-conda create --name YOURENV --file conda-win-64.lock
+conda create --name YOURENV --file env_file/conda-win-64.lock
 ```
 This can take a while since there are many packages that are quite big (namely pytorch).
 
 You can then activate the enviromnent:
 ```
 conda activate YOURENV
+```
+
+To generate the lock file from `environment.yml`, run:
+```
+conda-lock -k explicit --conda mamba
+```
+
+## Development dependencies
+
+We used [pre-commit](https://pre-commit.com/) to run some formatters and other hooks before each commit.
+And we used [git-flow](https://github.com/nvie/gitflow) to manage the different branches.
+
+### Formatters, Linters and Documentation
+
+To install the development dependencies with poetry, run:
+```
+poetry install -C env_files/
+```
+
+Or with pip:
+```
+pip install -r env_files/dev_requirements.txt
 ```
 
 ### Pre-commit

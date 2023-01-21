@@ -1,6 +1,9 @@
-data/*
-
-
+### Personal ignores ###
+models
+checkpoints
+lightning_logs
+data
+dataframes
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
@@ -33,6 +36,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+cpc_api-0.1.6
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
