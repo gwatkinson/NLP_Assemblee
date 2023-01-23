@@ -1,12 +1,12 @@
 # Copyright (c) 2022 Gabriel WATKINSON and Jéremie STYM-POPPER
 # SPDX-License-Identifier: MIT
 
+import json
+from typing import Dict, List, Union
+
 import torch
-import torch.nn.functional as F
 from torch import nn
 from transformers import BertModel, CamembertModel
-from typing import Dict, List, Optional, Tuple, Union
-import json
 
 
 class BertLinear(nn.Module):
@@ -32,7 +32,9 @@ class BertLinear(nn.Module):
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         pooled_output = self.bert(
             input_ids=input_ids, attention_mask=attention_mask, return_dict=True
-        )['pooler_output']  # (batch_size, nb_int, bert_dim)
+        )[
+            "pooler_output"
+        ]  # (batch_size, nb_int, bert_dim)
 
         if self.linear_dim > 0:
             pooled_output = self.linear(pooled_output)
@@ -49,7 +51,10 @@ class BertLinears(nn.Module):
         self.name = name or f"bert_linears_{list(bert_linears.keys())}"
 
     def forward(self, **inputs: Dict[str, torch.Tensor]) -> List[torch.Tensor]:
-        return [self.bert_linears[name](inputs[name]["input_ids"], inputs[name]["attention_mask"]) for name in self.bert_linears]
+        return [
+            self.bert_linears[name](inputs[name]["input_ids"], inputs[name]["attention_mask"])
+            for name in self.bert_linears
+        ]
 
 
 class BertLinearsPooler(nn.Module):
@@ -68,9 +73,16 @@ class BertLinearsPooler(nn.Module):
 
 
 class MLPLayer(nn.Module):
-    """Multi-layer perceptron classifier"""
+    """Multi-layer perceptron classifier."""
 
-    def __init__(self, mlp_dims: List[int], dropout: float = 0.1, negative_slope: float = 0.01, batch_norm: bool = True, name: str = None) -> None:
+    def __init__(
+        self,
+        mlp_dims: List[int],
+        dropout: float = 0.1,
+        negative_slope: float = 0.01,
+        batch_norm: bool = True,
+        name: str = None,
+    ) -> None:
         super().__init__()
         self.mlp_dims = mlp_dims
         self.dropout = dropout
@@ -93,14 +105,21 @@ class MLPLayer(nn.Module):
 
 
 class BayesianMLPLayer(nn.Module):
-    """Bayesian multi-layer perceptron classifier"""
+    """Bayesian multi-layer perceptron classifier."""
+
     pass
 
 
 class Classifier(nn.Module):
     """Class that combines the BertLinears, the pooler and the MLP."""
 
-    def __init__(self, bert_linears: Dict[str, BertLinear], pooler: BertLinearsPooler, mlp: MLPLayer, name: str = None) -> None:
+    def __init__(
+        self,
+        bert_linears: Dict[str, BertLinear],
+        pooler: BertLinearsPooler,
+        mlp: MLPLayer,
+        name: str = None,
+    ) -> None:
         super().__init__()
         self.inputs_keys = list(bert_linears.keys())
         self.bert_linears = BertLinears(**bert_linears)
@@ -121,9 +140,8 @@ def build_classifier_from_config(conf_file):
         conf = json.load(f)
 
     bert_linears = {
-        name: BertLinear(
-            **conf["linear_layers"]["layers"][name]
-        ) for name in conf["linear_layers"]["layers"]
+        name: BertLinear(**conf["linear_layers"]["layers"][name])
+        for name in conf["linear_layers"]["layers"]
     }
     pooler = BertLinearsPooler(**conf["pooler_layer"])
     mlp = MLPLayer(**conf["mlp_layer"])
