@@ -5,12 +5,15 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from transformers import BertModel, CamembertModel
+from typing import Dict, List, Optional, Tuple, Union
+import json
 
 
 class BertLinear(nn.Module):
     """Linear layer after a BERT layer."""
 
-    def __init__(self, bert_type, frozen, linear_dim, name=None):
+    def __init__(self, bert_type: str, frozen: bool, linear_dim: int, name: str = None) -> None:
+        super().__init__()
         self.bert_type = bert_type
         self.frozen = frozen
         self.linear_dim = linear_dim
@@ -26,10 +29,10 @@ class BertLinear(nn.Module):
         if linear_dim > 0:
             self.linear = nn.Linear(self.bert_dim, linear_dim)
 
-    def forward(self, input_ids, attention_mask):
-        pooled_output = self.bert_model(
-            input_ids=input_ids, attention_mask=attention_mask, return_dict=False
-        )  # (batch_size, nb_int, bert_dim)
+    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
+        pooled_output = self.bert(
+            input_ids=input_ids, attention_mask=attention_mask, return_dict=True
+        )['pooler_output']  # (batch_size, nb_int, bert_dim)
 
         if self.linear_dim > 0:
             pooled_output = self.linear(pooled_output)
@@ -37,97 +40,94 @@ class BertLinear(nn.Module):
         return pooled_output
 
 
-class ConcatLayer(nn.Module):
+class BertLinears(nn.Module):
+    """Creates multiple BertLinear layers."""
+
+    def __init__(self, name: str = None, **bert_linears: Dict[str, BertLinear]) -> None:
+        super().__init__()
+        self.bert_linears = nn.ModuleDict(bert_linears)
+        self.name = name or f"bert_linears_{list(bert_linears.keys())}"
+
+    def forward(self, **inputs: Dict[str, torch.Tensor]) -> List[torch.Tensor]:
+        return [self.bert_linears[name](inputs[name]["input_ids"], inputs[name]["attention_mask"]) for name in self.bert_linears]
+
+
+class BertLinearsPooler(nn.Module):
     """Concatenate the outputs of the BertLinear layers."""
 
-    def __init__(self, concat_type, name=None):
+    def __init__(self, concat_type: str, name: str = None) -> None:
+        super().__init__()
         self.concat_type = concat_type
         self.name = name or f"concat_{concat_type}"
 
-    def forward(self, *bert_linear_outputs):
+    def forward(self, *bert_linear_outputs: List[torch.Tensor]) -> torch.Tensor:
         if self.concat_type == "mean":
             return torch.mean(torch.stack(bert_linear_outputs), dim=0)
         elif self.concat_type == "concat":
-            return torch.cat(bert_linear_outputs, dim=2)
+            return torch.cat(bert_linear_outputs, dim=1)
 
 
-class SimpleCamembertClassifier(nn.Module):
-    def __init__(
-        self,
-        bert_model,
-        num_classes=11,
-        bert_dim=768,
-        input_dim=256,
-        embed_dim=256,
-        input_dim2=256,
-        num_heads=8,
-        dropout=0.2,
-    ):
-        super(SimpleCamembertClassifier, self).__init__()
+class MLPLayer(nn.Module):
+    """Multi-layer perceptron classifier"""
 
-        # Set the parameters
-        self.bert_dim = bert_dim
-        self.input_dim = input_dim
-        self.embed_dim = embed_dim
-        self.input_dim2 = input_dim2
-        self.num_attention_heads = num_heads
-        self.attention_head_dim = input_dim // num_heads
+    def __init__(self, mlp_dims: List[int], dropout: float = 0.1, negative_slope: float = 0.01, batch_norm: bool = True, name: str = None) -> None:
+        super().__init__()
+        self.mlp_dims = mlp_dims
+        self.dropout = dropout
+        self.negative_slope = negative_slope
+        self.name = name or f"mlp_{mlp_dims}_{dropout}"
 
-        # Initialize the BERT model
-        self.bert_model = bert_model
+        self.layers = nn.ModuleList()
+        for i in range(len(mlp_dims) - 1):
+            if dropout > 0 and dropout < 1:
+                self.layers.append(nn.Dropout(dropout))
+            if batch_norm:
+                self.layers.append(nn.BatchNorm1d(mlp_dims[i]))
+            self.layers.append(nn.LeakyReLU(negative_slope=negative_slope))
+            self.layers.append(nn.Linear(mlp_dims[i], mlp_dims[i + 1]))
 
-        # Initialize the linear layers for the multi-head attention
-        self.query_linear = nn.Linear(bert_dim, input_dim)
-        self.key_linear = nn.Linear(bert_dim, input_dim)
-        self.value_linear = nn.Linear(bert_dim, input_dim)
+        self.mlp = nn.Sequential(*self.layers)
 
-        # Initialize the multi-head attention layer
-        self.attention_layer = nn.MultiheadAttention(
-            embed_dim=self.embed_dim, num_heads=num_heads, batch_first=True
-        )
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.mlp(x)
 
-        # Initialize the linear layers for the output projection
-        self.linear1 = nn.Linear(input_dim, input_dim2)
-        self.linear2 = nn.Linear(input_dim, num_classes)
-        self.dropout1 = nn.Dropout(dropout)
-        self.dropout2 = nn.Dropout(dropout)
-        self.relu = nn.ReLU()
 
-    def forward(self, tokens, masks, interventions_masks):
-        """tokens (batch_size, nb_int, nb_tokens) masks (batch_size, nb_int,
-        nb_tokens) interventions_masks (batch_size, nb_int)"""
-        pooled_output = self.bert_model(
-            input_ids=tokens, attention_mask=masks, return_dict=False
-        )  # (batch_size, nb_int, bert_dim)
+class BayesianMLPLayer(nn.Module):
+    """Bayesian multi-layer perceptron classifier"""
+    pass
 
-        # Add a zero padding for CLS in attention
-        pooled_output_with_cls = F.pad(
-            pooled_output, pad=(0, 0, 1, 0), mode="constant", value=0.0
-        )  # (batch_size, nb_int + 1, bert_dim)
 
-        # Split the input tensors into the different attention heads
-        query_heads = self.query_linear(
-            pooled_output_with_cls
-        )  # (batch_size, nb_int + 1, input_dim)
-        key_heads = self.key_linear(pooled_output_with_cls)  # (batch_size, nb_int + 1, input_dim)
-        value_heads = self.value_linear(pooled_output_with_cls)  # (batch_size, input_dim)
+class Classifier(nn.Module):
+    """Class that combines the BertLinears, the pooler and the MLP."""
 
-        # Apply the multi-head attention
-        attn_output = self.attention_layer(
-            query_heads,
-            key_heads,
-            value_heads,
-            key_padding_mask=interventions_masks,
-            need_weights=False,
-        )  # (batch_size, input_dim)
+    def __init__(self, bert_linears: Dict[str, BertLinear], pooler: BertLinearsPooler, mlp: MLPLayer, name: str = None) -> None:
+        super().__init__()
+        self.inputs_keys = list(bert_linears.keys())
+        self.bert_linears = BertLinears(**bert_linears)
+        self.pooler = pooler
+        self.mlp = mlp
+        self.name = name or f"classifier_{bert_linears.name}_{mlp.name}"
 
-        deputy_repr = attn_output[:, 0, :]  # (batch_size, input_dim)
+    def forward(self, **inputs: Dict[str, torch.Tensor]) -> List[torch.Tensor]:
+        bert_outputs = self.bert_linears(**inputs)
+        pooled_output = self.pooler(*bert_outputs)
+        pred = self.mlp(pooled_output)
 
-        dropout_output1 = self.dropout1(deputy_repr)
-        linear_output1 = nn.ReLU(self.linear1(dropout_output1))  # (batch_size, input_dim2)
-        dropout_output2 = self.dropout2(linear_output1)
-        linear_output2 = nn.ReLU(self.linear2(dropout_output2))  # (batch_size, num_classes)
+        return pred
 
-        final_layer = nn.Softmax(linear_output2)  # (batch_size, num_classes)
 
-        return final_layer
+def build_classifier_from_config(conf_file):
+    with open(conf_file, "r") as f:
+        conf = json.load(f)
+
+    bert_linears = {
+        name: BertLinear(
+            **conf["linear_layers"]["layers"][name]
+        ) for name in conf["linear_layers"]["layers"]
+    }
+    pooler = BertLinearsPooler(**conf["pooler_layer"])
+    mlp = MLPLayer(**conf["mlp_layer"])
+
+    classifier = Classifier(bert_linears, pooler, mlp, conf["name"])
+
+    return classifier
