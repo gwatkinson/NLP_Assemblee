@@ -90,13 +90,13 @@ And we used [git-flow](https://github.com/nvie/gitflow) to manage the different 
 To install the development dependencies with poetry, run:
 
 ```bash
-poetry install -C env_files/
+poetry install
 ```
 
 Or with pip:
 
 ```bash
-pip install -r env_files/dev_requirements.txt
+pip install -e .
 ```
 
 ### Pre-commit
