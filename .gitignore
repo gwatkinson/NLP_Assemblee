@@ -4,6 +4,10 @@ checkpoints
 lightning_logs
 old_data
 dataframes
+data/
+!data/compiled/*_deputies.pkl
+!data/compiled/*_complete.tsv
+!data/processed/*_merged_data.pkl
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
