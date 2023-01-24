@@ -20,7 +20,7 @@ We used this website to fetch the textual data used in the project.
 
     It is used to fetch the data in the [notebook](api/scrapping.ipynb).
 
-::: nlp_assemblee.scrapping.api.fetch_data_for_legislature
+::: nlp_assemblee.api.fetch_data_for_legislature
 
 
 ## CPCApi
@@ -28,4 +28,4 @@ We used this website to fetch the textual data used in the project.
 !!! info "API class"
     The wrapper function uses an API class inspired by the [GitHub of nosdeputes.fr](https://github.com/regardscitoyens/cpc-api).
 
-::: nlp_assemblee.scrapping.api.CPCApi
+::: nlp_assemblee.api.CPCApi

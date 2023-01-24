@@ -12,7 +12,7 @@ nav:
   - Home: index.md
   - Getting the Data:
       - API: api/api.md
-      - Fetch the data: api/scrapping.ipynb
+      # - Fetch the data: notebooks/scrapping.ipynb
 
 # Set the theme
 theme:
@@ -53,13 +53,14 @@ extra:
 plugins:
   - search:
       lang: en
+  - autorefs
   - tags
-  - git-authors
-  - git-committers:
-      repository: gwatkinson/NLP_Assemblee/
+  # - git-authors
+  # - git-committers:
+  #     repository: gwatkinson/NLP_Assemblee/
       # branch: main
   - mkdocstrings
-  - mkdocs-jupyter
+  # - mkdocs-jupyter
 
 # Set markdown extensions
 markdown_extensions:
@@ -68,6 +69,8 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
   - def_list
+  - mkdocs-click
+  - mkdocs_graphviz
   - footnotes
   - tables
   - toc:
@@ -79,3 +82,4 @@ extra_javascript:
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/gh/rod2ik/cdn@main/mkdocs/javascripts/mkdocs-graphviz.js
