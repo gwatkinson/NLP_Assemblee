@@ -14,20 +14,25 @@ channels:
 
 dependencies:
   # Environment
-  - python=3.10.*  # or don't specify the version and use the latest stable Python
+  - python=3.10
   - pip=22.3.1
+
   # Pytorch
   - pytorch::pytorch=1.13.0
-  # - pytorch::torchaudio=0.13.0
-  # - pytorch::torchvision=0.14.0
   - pytorch::pytorch-cuda=11.7
   - transformers=4.24
   - pytorch-lightning=1.8
+  - graphviz=2.50
+  - python-graphviz=0.20
+  - torchview=0.2
+  - pytorch-model-summary
+
   # Other classic data and ML packages
   - numpy=1.23
   - pandas=1.5
   - scipy=1.9
   - scikit-learn=1.1
+
   # API
   - requests=2.28
   - urllib3=1.26
@@ -36,21 +41,42 @@ dependencies:
   - unidecode=1.3
   - fuzzywuzzy=0.18
   - aiohttp=3.8
+
   # Plots
   - matplotlib=3.6
   - seaborn=0.12
   - plotly=5.11
   - streamlit=1.9
-  - graphviz=2.50
-  - python-graphviz=0.20
-  - torchview=0.2
+
   # CLI
-  - click=8.0
+  - pre-commit=3.0
+  - click=8
+
   # Jupyter
   - jupyter=1.0
   - notebook=6.5
   - ipywidgets=7.6
+  - jupytext=1.14
 
+  # Docs
+  - mkdocs=1.4
+  - mkdocs-material=8.3
+  - mkdocstrings=0.19
+  - mkdocstrings-python=0.8
+  - mkdocs-autorefs=0.4
+  - mkdocs-jupyter=0.22
+  - mkdocs-click=0.6
+  - mkdocs-graphviz=1.5
+
+  # Formatters
+  - black=22.12
+  - nbqa=1.6
+  - isort=5.11
+  - pylama=7.7
+
+
+  # - pytorch::torchaudio=0.13.0
+  # - pytorch::torchvision=0.14.0
 
 # Non-standard section listing target platforms for conda-lock:
 platforms:
