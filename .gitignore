@@ -2,7 +2,7 @@
 models
 checkpoints
 lightning_logs
-data
+old_data
 dataframes
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
