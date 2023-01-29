@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
-
+from transformers import BertTokenizer, CamembertTokenizer
 
 class DataProcessing:
     def __init__(
@@ -236,3 +236,39 @@ class DataProcessing:
         self.compiled_data_processed.to_pickle(path / f"{legislature}th_compiled_processed.pkl")
         self.deputies_df_processed.to_pickle(path / f"{legislature}th_deputies_processed.pkl")
         self.processed_data.to_pickle(path / f"{legislature}th_merged_data.pkl")
+
+    def tokenise(self, bert_type, labels_dict):
+        df = self.processed_data.to_dict(orient='records')
+
+        interventions = [
+            tokenizer(
+                text,
+                padding="max_length",
+                max_length=max_len_padding,
+                truncation=True,
+                return_tensors="pt",
+            )
+            for text in df[intervention_var]
+        ]
+
+        titres = [
+            tokenizer(
+                text,
+                padding="max_length",
+                max_length=max_len_padding_titre,
+                truncation=True,
+                return_tensors="pt",
+            )
+            for text in df[titre_var]
+        ]
+
+        professions = [
+            tokenizer(
+                text,
+                padding="max_length",
+                max_length=max_len_padding_profession,
+                truncation=True,
+                return_tensors="pt",
+            )
+            for text in df[profession_var]
+        ]
