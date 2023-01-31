@@ -22,10 +22,11 @@ class DataProcessing:
         label_dict: dict = {},
         process: bool = True,
         tokenize: bool = True,
+        save: str | bool = "./processed_data",
+        load: str | bool = False,
         max_len: int = 512,
         year_min: int = 1940,
         year_max: int = 2022,
-        save: str | bool = "./processed_data",
         legislature: int = 15,
         verbose: bool = True,
     ) -> None:
@@ -44,6 +45,8 @@ class DataProcessing:
         self.compiled_data_path = compiled_data_path
         self.process = process
         self.save = save
+        self.load = load
+        self.tokenize = tokenize
         self.max_len = max_len
         self.year_min = year_min
         self.year_max = year_max
@@ -51,13 +54,19 @@ class DataProcessing:
         self.label_dict = label_dict
         self.verbose = verbose
 
-        self.camembert_tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
-        self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
-
         self.deputies_df = pd.read_pickle(self.deputies_df_path)
         self.compiled_data = pd.read_csv(self.compiled_data_path, sep="\t")
 
-        if process:
+        if load:
+            print("Loading the processed data...")
+            try:
+                self.load_tables()
+            except Exception as e:
+                print("Error while loading the processed data.")
+                print(e)
+                self.load = False
+
+        if process and not self.load:
             print("Cleaning the deputies dataframe...")
             self.clean_deputies_df()  # Create self.deputies_df_processed
             print("Cleaning the compiled dataset...")
@@ -65,13 +74,13 @@ class DataProcessing:
             print("Merging the two dataframes...")
             self.merging_process()  # Create self.processed_data
 
-        if tokenize:
+        if tokenize and not self.load:
             print("Tokenizing the resulting data...")
             self.tokenizing_process()  # Create self.records
 
-        if save:
+        if save and not self.load:
             print("Saving the processed data...")
-            self.save_tables(save, legislature)
+            self.save_tables()
 
     @staticmethod
     def process_intervention(row, max_len=512):
@@ -154,6 +163,10 @@ class DataProcessing:
         tdf_without_short = tdf_intervention_processed[
             tdf_intervention_processed["intervention_count"] > 10
         ].reset_index(drop=True)
+
+        tdf_without_short["intervention"] = tdf_without_short["intervention"].str.replace(
+            "\x92", "'"
+        )
 
         self.compiled_data_processed = tdf_without_short
 
@@ -286,6 +299,8 @@ class DataProcessing:
                 interventions and all the other information.
         """
         self.records = self.short_interventions.to_dict(orient="records")
+        self.camembert_tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
+        self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
 
         pbar = tqdm(self.records) if self.verbose else self.records
         for record in pbar:
@@ -320,18 +335,82 @@ class DataProcessing:
 
         return self.records
 
-    def save_tables(self, save, legislature):
-        """Save the generated tables.
-
-        Args:
-            save (str): Path to save the tables
-            legislature (int): Number of the legislature
-        """
-        path = Path(save)
+    def save_tables(self):
+        """Save the generated tables."""
+        path = Path(self.save)
         path.mkdir(parents=True, exist_ok=True)
-        self.compiled_data_processed.to_pickle(path / f"{legislature}th_compiled_processed.pkl")
-        self.deputies_df_processed.to_pickle(path / f"{legislature}th_deputies_processed.pkl")
-        self.processed_data.to_pickle(path / f"{legislature}th_merged_data.pkl")
-        self.short_interventions.to_pickle(path / f"{legislature}th_merged_data_short.pkl")
-        with open(path / f"{legislature}th_records.pkl", "wb") as f:
+        self.compiled_data_processed.to_pickle(
+            path / f"{self.legislature}th_compiled_processed.pkl"
+        )
+        self.deputies_df_processed.to_pickle(path / f"{self.legislature}th_deputies_processed.pkl")
+        self.processed_data.to_pickle(path / f"{self.legislature}th_merged_data.pkl")
+        self.short_interventions.to_pickle(path / f"{self.legislature}th_merged_data_short.pkl")
+        with open(path / f"{self.legislature}th_records.pkl", "wb") as f:
             pickle.dump(self.records, f, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(path / f"{self.legislature}th_bert_tokenizer.pkl", "wb") as f:
+            pickle.dump(self.bert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(path / f"{self.legislature}th_camembert_tokenizer.pkl", "wb") as f:
+            pickle.dump(self.camembert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+    @staticmethod
+    def load_pickle_df(path):
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"Path {path} does not exist.")
+        else:
+            return pd.read_pickle(path)
+
+    @staticmethod
+    def load_pickle_file(path):
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"Path {path} does not exist.")
+        else:
+            with open(path, "rb") as f:
+                tmp = pickle.load(f)
+            return tmp
+
+    def load_tables(self):
+        """Load the generated tables."""
+        path = Path(self.load)
+
+        if not path.exists():
+            raise FileNotFoundError(f"Path {path} does not exist.")
+
+        print("Loading the dataframes...")
+        self.compiled_data_processed = self.load_pickle_df(
+            path / f"{self.legislature}th_compiled_processed.pkl"
+        )
+        self.deputies_df_processed = self.load_pickle_df(
+            path / f"{self.legislature}th_deputies_processed.pkl"
+        )
+        self.processed_data = self.load_pickle_df(
+            path / f"{self.legislature}th_merged_data_short.pkl"
+        )
+        self.short_interventions = self.load_pickle_df(
+            path / f"{self.legislature}th_merged_data_short.pkl"
+        )
+
+        print("Loading the records...")
+        self.records = self.load_pickle_file(path / f"{self.legislature}th_records.pkl")
+
+        print("Loading the tokenizers...")
+        self.bert_tokenizer = self.load_pickle_file(
+            path / f"{self.legislature}th_bert_tokenizer.pkl"
+        )
+        self.camembert_tokenizer = self.load_pickle_file(
+            path / f"{self.legislature}th_camembert_tokenizer.pkl"
+        )
+
+    def load_tokenizers(self):
+        try:
+            path = Path(self.load)
+            self.bert_tokenizer = self.load_pickle_file(
+                path / f"{self.legislature}th_bert_tokenizer.pkl"
+            )
+            self.camembert_tokenizer = self.load_pickle_file(
+                path / f"{self.legislature}th_camembert_tokenizer.pkl"
+            )
+        except FileNotFoundError:
+            self.camembert_tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
+            self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
