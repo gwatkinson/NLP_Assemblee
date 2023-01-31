@@ -46,6 +46,7 @@ dependencies:
   - matplotlib=3.6
   - seaborn=0.12
   - plotly=5.11
+  - python-kaleido=0.2
   - streamlit=1.9
 
   # CLI
