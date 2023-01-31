@@ -1,0 +1,31 @@
+{
+    "name": "TSP_C_256-M-L_BN_D_128_128",
+    "linear_layers": {
+        "layers": {
+            "intervention": {
+                "bert_type": "camembert",
+                "frozen": true,
+                "linear_dim": 256
+            },
+            "title": {
+                "bert_type": "camembert",
+                "frozen": true,
+                "linear_dim": 256
+            },
+            "profession": {
+                "bert_type": "camembert",
+                "frozen": true,
+                "linear_dim": 256
+            }
+        }
+    },
+    "pooler_layer": {
+        "concat_type": "mean"
+    },
+    "mlp_layer": {
+        "mlp_dims": [256, 128, 64, 3],
+        "dropout": 0.1,
+        "negative_slope": 0.01,
+        "batch_norm": true
+    }
+}
