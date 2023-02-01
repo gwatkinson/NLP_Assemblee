@@ -149,6 +149,7 @@ def build_trainer_from_config(conf_file):
 
     num_epochs = conf["epochs"]
     precision = conf["precision"]
+    list_metrics = conf["metrics"]
     
     if conf["optimizer"] == "Adam":
         optimizer = torch.optim.Adam(model.parameters(), **conf["optimizer_kwargs"])
@@ -160,11 +161,16 @@ def build_trainer_from_config(conf_file):
     elif conf["loss"] == "MSEloss":
         criterion = nn.MSELoss(**conf["loss_kwargs"])
 
+    if conf["scheduler"] == "ReduceLROnPlateau":
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(**conf["scheduler_kwargs"])
+
     training_parameters = {
         "optimizer":optimizer,
         "loss":criterion,
         "epochs":num_epochs,
-        "precision":precision
+        "precision":precision,
+        "scheduler":scheduler,
+        "list_metrics":list_metrics
     }
 
     return training_parameters
