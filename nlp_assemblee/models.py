@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from typing import Dict, List, Union
+from typing import Dict, List
 
 import torch
 from torch import nn
@@ -29,9 +29,9 @@ class BertLinear(nn.Module):
         if linear_dim > 0:
             self.linear = nn.Linear(self.bert_dim, linear_dim)
 
-    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
+    def forward(self, input_ids: torch.Tensor) -> torch.Tensor:
         pooled_output = self.bert(
-            input_ids=input_ids, attention_mask=attention_mask, return_dict=True
+            input_ids=input_ids, attention_mask=(input_ids != 0).long(), return_dict=True
         )[
             "pooler_output"
         ]  # (batch_size, nb_int, bert_dim)
@@ -45,16 +45,13 @@ class BertLinear(nn.Module):
 class BertLinears(nn.Module):
     """Creates multiple BertLinear layers."""
 
-    def __init__(self, name: str = None, **bert_linears: Dict[str, BertLinear]) -> None:
+    def __init__(self, name: str = None, **bert_layers: Dict[str, BertLinear]) -> None:
         super().__init__()
-        self.bert_linears = nn.ModuleDict(bert_linears)
-        self.name = name or f"bert_linears_{list(bert_linears.keys())}"
+        self.bert_layers = nn.ModuleDict(bert_layers)
+        self.name = name or f"bert_linears_{list(bert_layers.keys())}"
 
     def forward(self, **inputs: Dict[str, torch.Tensor]) -> List[torch.Tensor]:
-        return [
-            self.bert_linears[name](inputs[name]["input_ids"], inputs[name]["attention_mask"])
-            for name in self.bert_linears
-        ]
+        return [self.bert_layers[name](inputs[name]) for name in self.bert_layers]
 
 
 class BertLinearsPooler(nn.Module):
@@ -104,28 +101,22 @@ class MLPLayer(nn.Module):
         return self.mlp(x)
 
 
-class BayesianMLPLayer(nn.Module):
-    """Bayesian multi-layer perceptron classifier."""
-
-    pass
-
-
 class Classifier(nn.Module):
     """Class that combines the BertLinears, the pooler and the MLP."""
 
     def __init__(
         self,
-        bert_linears: Dict[str, BertLinear],
+        bert_layers: Dict[str, BertLinear],
         pooler: BertLinearsPooler,
         mlp: MLPLayer,
         name: str = None,
     ) -> None:
         super().__init__()
-        self.inputs_keys = list(bert_linears.keys())
-        self.bert_linears = BertLinears(**bert_linears)
+        self.inputs_keys = list(bert_layers.keys())
+        self.bert_linears = BertLinears(**bert_layers)
         self.pooler = pooler
         self.mlp = mlp
-        self.name = name or f"classifier_{bert_linears.name}_{mlp.name}"
+        self.name = name or f"classifier_{self.bert_linears.name}_{self.mlp.name}"
 
     def forward(self, **inputs: Dict[str, torch.Tensor]) -> List[torch.Tensor]:
         bert_outputs = self.bert_linears(**inputs)
@@ -137,7 +128,7 @@ class Classifier(nn.Module):
 
 def build_classifier_from_config(conf_file):
     with open(conf_file, "r") as f:
-        conf = json.load(f)
+        conf = json.load(f)["classifier"]
 
     bert_linears = {
         name: BertLinear(**conf["linear_layers"]["layers"][name])
