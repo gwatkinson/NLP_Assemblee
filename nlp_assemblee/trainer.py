@@ -39,6 +39,9 @@ class LitClassifier(pl.LightningModule):
         loss = self.get_loss(batch, model_type="train")
         return loss
 
+    def validation_step(self, val_batch, batch_idx):
+        self.get_loss(val_batch, model_type="val")
+        return None 
 
 class SeanceLitClassifier(pl.LightningModule):
     def __init__(
