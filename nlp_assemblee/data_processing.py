@@ -305,31 +305,43 @@ class DataProcessing:
         pbar = tqdm(self.records) if self.verbose else self.records
         for record in pbar:
             record["camembert_tokens"] = {
-                "intervention": self.camembert_tokenizer(
-                    record["intervention"], add_special_tokens=True, truncation=True
+                "intervention": self.camembert_tokenizer.encode(
+                    record["intervention"],
+                    add_special_tokens=True,
+                    truncation=True,
                 ),
-                "titre_complet": self.camembert_tokenizer(
-                    record["titre_complet"], add_special_tokens=True, truncation=True
+                "titre_complet": self.camembert_tokenizer.encode(
+                    record["titre_complet"],
+                    add_special_tokens=True,
+                    truncation=True,
                 ),
-                "titre": self.camembert_tokenizer(
-                    record["titre"], add_special_tokens=True, truncation=True
+                "titre": self.camembert_tokenizer.encode(
+                    record["titre"],
+                    add_special_tokens=True,
+                    truncation=True,
                 ),
-                "profession": self.camembert_tokenizer(
-                    record["profession"], add_special_tokens=True, truncation=True
+                "profession": self.camembert_tokenizer.encode(
+                    record["profession"],
+                    add_special_tokens=True,
+                    truncation=True,
                 ),
             }
             record["bert_tokens"] = {
-                "intervention": self.bert_tokenizer(
-                    record["intervention"], add_special_tokens=True, truncation=True
+                "intervention": self.bert_tokenizer.encode(
+                    record["intervention"],
+                    truncation=True,
                 ),
-                "titre_complet": self.bert_tokenizer(
-                    record["titre_complet"], add_special_tokens=True, truncation=True
+                "titre_complet": self.bert_tokenizer.encode(
+                    record["titre_complet"],
+                    truncation=True,
                 ),
-                "titre": self.bert_tokenizer(
-                    record["titre"], add_special_tokens=True, truncation=True
+                "titre": self.bert_tokenizer.encode(
+                    record["titre"],
+                    truncation=True,
                 ),
-                "profession": self.bert_tokenizer(
-                    record["profession"], add_special_tokens=True, truncation=True
+                "profession": self.bert_tokenizer.encode(
+                    record["profession"],
+                    truncation=True,
                 ),
             }
 
@@ -345,8 +357,12 @@ class DataProcessing:
         self.deputies_df_processed.to_pickle(path / f"{self.legislature}th_deputies_processed.pkl")
         self.processed_data.to_pickle(path / f"{self.legislature}th_merged_data.pkl")
         self.short_interventions.to_pickle(path / f"{self.legislature}th_merged_data_short.pkl")
-        with open(path / f"{self.legislature}th_records.pkl", "wb") as f:
-            pickle.dump(self.records, f, protocol=pickle.HIGHEST_PROTOCOL)
+        try:
+            with open(path / f"{self.legislature}th_records.pkl", "wb") as f:
+                pickle.dump(self.records, f, protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as e:
+            print("Could not save records.")
+            print(e)
         with open(path / f"{self.legislature}th_bert_tokenizer.pkl", "wb") as f:
             pickle.dump(self.bert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
         with open(path / f"{self.legislature}th_camembert_tokenizer.pkl", "wb") as f:
