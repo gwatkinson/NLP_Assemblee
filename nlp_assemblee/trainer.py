@@ -4,8 +4,8 @@ from torch import nn, optim
 import torch
 from torch.utils.data import DataLoader
 from transformers import CamembertModel, CamembertTokenizer, BertModel, BertTokenizer
-
 from models import build_classifier_from_config, build_trainer_from_config
+from pytorch_lightning import loggers as pl_loggers
 
 
 class LitModel(pl.LightningModule):
@@ -51,7 +51,10 @@ def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file)
     trainer_parameters = build_trainer_from_config(path_conf_file)
     gpus = int(torch.cuda.is_available())
 
-    trainer = pl.Trainer(gpus=gpus)
+    # Tensorboard config
+    tensorboard = trainer_parameters["tensorboard"]
+
+    trainer = pl.Trainer(logger=tensorboard, gpus=gpus)
 
     pass 
 

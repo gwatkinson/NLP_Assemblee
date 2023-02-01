@@ -2,11 +2,14 @@
 # SPDX-License-Identifier: MIT
 
 import json
-from typing import Dict, List
+from typing import Dict, List, Any
 
 import torch
 from torch import nn
 from transformers import BertModel, CamembertModel
+
+from pytorch_lightning import loggers as pl_loggers
+
 
 
 class BertLinear(nn.Module):
@@ -164,13 +167,20 @@ def build_trainer_from_config(conf_file):
     if conf["scheduler"] == "ReduceLROnPlateau":
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, **conf["scheduler_kwargs"])
 
+    # Tensorboard config
+    if conf["tensorboard"]:
+        tensorboard = pl_loggers.TensorBoardLogger(**conf["tensorboard_kwargs"])
+    else:
+        tensorboard = False
+
     training_parameters = {
         "optimizer":optimizer,
         "loss":criterion,
         "epochs":num_epochs,
         "precision":precision,
         "scheduler":scheduler,
-        "list_metrics":list_metrics
+        "list_metrics":list_metrics,
+        "tensorboard_dir":tensorboard
     }
 
     return training_parameters
