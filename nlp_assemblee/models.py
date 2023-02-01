@@ -152,9 +152,11 @@ def build_trainer_from_config(conf_file):
     with open(conf_file, "r") as f:
         conf = json.load(f)["trainer"]
 
+    # Global config
     num_epochs = conf["epochs"]
     precision = conf["precision"]
     list_metrics = conf["metrics"]
+    seed = conf["seed"]
     
     # Optimizer config
     if conf["optimizer"] == "Adam":
@@ -191,6 +193,7 @@ def build_trainer_from_config(conf_file):
         earlystop = None
 
     training_parameters = {
+        "seed": seed,
         "optimizer":optimizer,
         "loss":criterion,
         "epochs":num_epochs,
