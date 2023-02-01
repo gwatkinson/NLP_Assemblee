@@ -1,17 +1,38 @@
 import pytorch_lightning as pl
+import numpy as np
 from torch import nn, optim
+import torch
+from torch.utils.data import DataLoader
+from transformers import CamembertModel, CamembertTokenizer, BertModel, BertTokenizer
 
 
 class LitClassifier(pl.LightningModule):
     def __init__(
         self,
         classifier: nn.Module,
+        criterion: nn.Module,
         optimizer_type: str,
         loss_type: str,
     ):
         super().__init__()
         self.classifier = classifier
         self.criterion = criterion
+        if optimizer_type == "Adam":
+            self.optimizer = optim.Adam(self.classifier.parameters(), 
+                                       lr=0.0001)
+        elif optimizer_type == "SGD":
+            self.optimizer = optim.SGD(self.classifier.parameters(), 
+                                       lr=0.0001, 
+                                       momentum=0.9)
+        else: 
+            raise ValueError('Optimizer is not in the list')
+        
+        if loss_type == "class":
+            self.criterion = nn.CrossEntropyLoss()
+        elif loss_type == "reg":
+            self.criterion = nn.MSELoss()
+        else:
+            raise ValueError('Loss is not in the list')
 
     def forward(self, x):
         return self.classifier(**x)
