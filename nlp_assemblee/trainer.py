@@ -5,41 +5,32 @@ import torch
 from torch.utils.data import DataLoader
 from transformers import CamembertModel, CamembertTokenizer, BertModel, BertTokenizer
 
+from models import build_classifier_from_config, build_trainer_from_config
+
 
 class LitClassifier(pl.LightningModule):
+
     def __init__(
         self,
-        classifier: nn.Module,
-        criterion: nn.Module,
-        optimizer_type: str,
-        loss_type: str,
+        # classifier: nn.Module,
+        path_conf_file : str,
     ):
         super().__init__()
-        self.classifier = classifier
-        self.criterion = criterion
-        if optimizer_type == "Adam":
-            self.optimizer = optim.Adam(self.classifier.parameters(), 
-                                       lr=0.0001)
-        elif optimizer_type == "SGD":
-            self.optimizer = optim.SGD(self.classifier.parameters(), 
-                                       lr=0.0001, 
-                                       momentum=0.9)
-        else: 
-            raise ValueError('Optimizer is not in the list')
-        
-        if loss_type == "class":
-            self.criterion = nn.CrossEntropyLoss()
-        elif loss_type == "reg":
-            self.criterion = nn.MSELoss()
-        else:
-            raise ValueError('Loss is not in the list')
+        self.model = build_classifier_from_config(path_conf_file)
+        self.train_parameters = build_trainer_from_config(path_conf_file)
+        self.criterion = self.train_parameters["loss"]
+
 
     def forward(self, x):
-        return self.classifier(**x)
+        return self.model(**x)
+
+    def configure_optimizers(self):
+        optimizer = self.train_parameters["optimizer"]
+        return optimizer
 
     def get_loss(self, batch, model_type="train"):
         x, y = batch
-        z = self.classifier(**x)
+        z = self.model(**x)
         loss = self.criterion(z, y)
         self.log(f"{model_type}_loss", loss)
         return loss
@@ -47,10 +38,6 @@ class LitClassifier(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         loss = self.get_loss(batch, model_type="train")
         return loss
-
-    def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-3)
-        return optimizer
 
 
 class SeanceLitClassifier(pl.LightningModule):
