@@ -64,10 +64,9 @@ def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file)
 
     callbacks = checkpoint + earlystop
     trainer = pl.Trainer(logger=tensorboard, callbacks=callbacks)
-
     trainer.fit(model, train_loader, val_loader)
 
-    pass 
+    return None 
 
 class SeanceLitClassifier(pl.LightningModule):
     def __init__(
