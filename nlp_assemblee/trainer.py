@@ -49,12 +49,18 @@ def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file)
 
     model = lightning_model()
     trainer_parameters = build_trainer_from_config(path_conf_file)
-    gpus = int(torch.cuda.is_available())
 
     # Tensorboard config
     tensorboard = trainer_parameters["tensorboard"]
 
-    trainer = pl.Trainer(logger=tensorboard, gpus=gpus)
+    # Checkpoint config
+    checkpoint = trainer_parameters["checkpoint"]
+
+    # EarlyStopping config
+    earlystop = trainer_parameters["earlystop"]
+
+    callbacks = checkpoint + earlystop
+    trainer = pl.Trainer(logger=tensorboard, callbacks=callbacks)
 
     pass 
 

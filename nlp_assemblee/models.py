@@ -9,6 +9,8 @@ from torch import nn
 from transformers import BertModel, CamembertModel
 
 from pytorch_lightning import loggers as pl_loggers
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 
 
@@ -176,6 +178,18 @@ def build_trainer_from_config(conf_file):
     else:
         tensorboard = False
 
+    # Checkpoint config
+    if conf["checkpoint"]:
+        checkpoint = ModelCheckpoint(**conf["checkpoint_kwargs"])
+    else:
+        checkpoint = None
+
+    # EarlyStopping config
+    if conf["early_stopping"]:
+        earlystop = EarlyStopping(**conf["early_stopping_kwargs"])
+    else:
+        earlystop = None
+
     training_parameters = {
         "optimizer":optimizer,
         "loss":criterion,
@@ -183,7 +197,9 @@ def build_trainer_from_config(conf_file):
         "precision":precision,
         "scheduler":scheduler,
         "list_metrics":list_metrics,
-        "tensorboard_dir":tensorboard
+        "tensorboard_dir":tensorboard,
+        "checkpoint":[checkpoint],
+        "earlystop": [earlystop]
     }
 
     return training_parameters
