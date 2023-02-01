@@ -162,7 +162,7 @@ def build_trainer_from_config(conf_file):
         criterion = nn.MSELoss(**conf["loss_kwargs"])
 
     if conf["scheduler"] == "ReduceLROnPlateau":
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(**conf["scheduler_kwargs"])
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, **conf["scheduler_kwargs"])
 
     training_parameters = {
         "optimizer":optimizer,
