@@ -8,7 +8,7 @@ from transformers import CamembertModel, CamembertTokenizer, BertModel, BertToke
 from models import build_classifier_from_config, build_trainer_from_config
 
 
-class LitClassifier(pl.LightningModule):
+class LitModel(pl.LightningModule):
 
     def __init__(
         self,
@@ -17,6 +17,7 @@ class LitClassifier(pl.LightningModule):
     ):
         super().__init__()
         self.model = build_classifier_from_config(path_conf_file)
+        
         self.train_parameters = build_trainer_from_config(path_conf_file)
         self.criterion = self.train_parameters["loss"]
 
