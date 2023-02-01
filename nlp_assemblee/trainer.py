@@ -2,6 +2,36 @@ import pytorch_lightning as pl
 from torch import nn, optim
 
 
+class LitClassifier(pl.LightningModule):
+    def __init__(
+        self,
+        classifier: nn.Module,
+        optimizer_type: str,
+        loss_type: str,
+    ):
+        super().__init__()
+        self.classifier = classifier
+        self.criterion = criterion
+
+    def forward(self, x):
+        return self.classifier(**x)
+
+    def get_loss(self, batch, model_type="train"):
+        x, y = batch
+        z = self.classifier(**x)
+        loss = self.criterion(z, y)
+        self.log(f"{model_type}_loss", loss)
+        return loss
+
+    def training_step(self, batch, batch_idx):
+        loss = self.get_loss(batch, model_type="train")
+        return loss
+
+    def configure_optimizers(self):
+        optimizer = optim.Adam(self.parameters(), lr=1e-3)
+        return optimizer
+
+
 class SeanceLitClassifier(pl.LightningModule):
     def __init__(
         self,
@@ -20,18 +50,8 @@ class SeanceLitClassifier(pl.LightningModule):
     ):
         super().__init__()
         self.example_input_array = {
-            "intervention": {
-                "input_ids": torch.randint(0, 100, (32, 1, 512)),
-                "attention_mask": torch.randint(0, 2, (32, 1, 512)),
-            },
-            "titre": {
-                "input_ids": torch.randint(0, 100, (32, 1, 64)),
-                "attention_mask": torch.randint(0, 2, (32, 1, 64)),
-            },
-            "profession": {
-                "input_ids": torch.randint(0, 100, (32, 1, 16)),
-                "attention_mask": torch.randint(0, 2, (32, 1, 16)),
-            },
+            "intervention": torch.randint(0, 100, (32, 1, 512)),
+            "profession": torch.randint(0, 100, (32, 1, 16)),
         }
 
         # Parameters
