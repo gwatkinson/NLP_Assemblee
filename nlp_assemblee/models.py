@@ -140,3 +140,31 @@ def build_classifier_from_config(conf_file):
     classifier = Classifier(bert_linears, pooler, mlp, conf["name"])
 
     return classifier
+
+def build_trainer_from_config(conf_file):
+    model = build_classifier_from_config(conf_file)
+
+    with open(conf_file, "r") as f:
+        conf = json.load(f)["trainer"]
+
+    num_epochs = conf["epochs"]
+    precision = conf["precision"]
+    
+    if conf["optimizer"] == "Adam":
+        optimizer = torch.optim.Adam(model.parameters(), **conf["optimizer_kwargs"])
+    elif conf["optimizer"] == "SGD":
+        optimizer = torch.optim.SGD(model.parameters(), **conf["optimizer_kwargs"] )
+
+    if conf["loss"] == "CrossEntropyLoss":
+        criterion = nn.CrossEntropyLoss(**conf["loss_kwargs"])
+    elif conf["loss"] == "MSEloss":
+        criterion = nn.MSELoss(**conf["loss_kwargs"])
+
+    training_parameters = {
+        "optimizer":optimizer,
+        "loss":criterion,
+        "epochs":num_epochs,
+        "precision":precision
+    }
+
+    return training_parameters
