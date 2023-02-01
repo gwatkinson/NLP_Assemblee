@@ -50,6 +50,9 @@ def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file)
     model = lightning_model()
     trainer_parameters = build_trainer_from_config(path_conf_file)
 
+    if trainer_parameters["seed"]:
+        torch.manual_seed(trainer_parameters["seed"])
+
     # Tensorboard config
     tensorboard = trainer_parameters["tensorboard"]
 
@@ -61,6 +64,8 @@ def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file)
 
     callbacks = checkpoint + earlystop
     trainer = pl.Trainer(logger=tensorboard, callbacks=callbacks)
+
+    trainer.fit(model, train_loader, val_loader)
 
     pass 
 
