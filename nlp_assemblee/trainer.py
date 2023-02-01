@@ -26,7 +26,8 @@ class LitClassifier(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = self.train_parameters["optimizer"]
-        return optimizer
+        lr_scheduler = self.train_parameters["scheduler"]
+        return [optimizer], [lr_scheduler]
 
     def get_loss(self, batch, model_type="train"):
         x, y = batch
@@ -42,6 +43,16 @@ class LitClassifier(pl.LightningModule):
     def validation_step(self, val_batch, batch_idx):
         self.get_loss(val_batch, model_type="val")
         return None 
+
+def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file):
+
+    model = lightning_model()
+    trainer_parameters = build_trainer_from_config(path_conf_file)
+    gpus = int(torch.cuda.is_available())
+
+    trainer = pl.Trainer(gpus=gpus)
+
+    pass 
 
 class SeanceLitClassifier(pl.LightningModule):
     def __init__(
