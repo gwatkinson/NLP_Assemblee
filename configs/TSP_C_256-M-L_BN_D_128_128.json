@@ -80,8 +80,10 @@
         "checkpoint_save_top_k": 3,
         "checkpoint_verbose": true,
         "tensorboard": true,
-        "tensorboard_dir": "tensorboard",
-        "tensorboard_filename": "TSP_C_256-M-L_BN_D_128_128",
+        "tensorboard_kwargs": {
+            "save_dir": "tensorboard",
+            "name": "TSP_C_256-M-L_BN_D_128_128"
+        },
         "tensorboard_verbose": true,
         "seed": 42
     }
