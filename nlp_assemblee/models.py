@@ -154,16 +154,19 @@ def build_trainer_from_config(conf_file):
     precision = conf["precision"]
     list_metrics = conf["metrics"]
     
+    # Optimizer config
     if conf["optimizer"] == "Adam":
         optimizer = torch.optim.Adam(model.parameters(), **conf["optimizer_kwargs"])
     elif conf["optimizer"] == "SGD":
         optimizer = torch.optim.SGD(model.parameters(), **conf["optimizer_kwargs"] )
 
+    # Loss config
     if conf["loss"] == "CrossEntropyLoss":
         criterion = nn.CrossEntropyLoss(**conf["loss_kwargs"])
     elif conf["loss"] == "MSEloss":
         criterion = nn.MSELoss(**conf["loss_kwargs"])
 
+    # Scheduler confg
     if conf["scheduler"] == "ReduceLROnPlateau":
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, **conf["scheduler_kwargs"])
 
