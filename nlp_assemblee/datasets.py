@@ -1,85 +1,36 @@
+import json
+import pickle
+
 import numpy as np
 import torch
-from torch.utils.data import Dataset
+from sklearn.model_selection import train_test_split
+from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import DataLoader, Dataset
 
 
-class SeanceDataset(Dataset):
-    def __init__(
-        self,
-        tokenizer,
-        df,
-        labels_dict,
-        group_var="groupe",
-        intervention_var="intervention",
-        titre_var="titre_complet",
-        profession_var="profession",
-        max_len_padding=512,
-        max_len_padding_titre=64,
-        max_len_padding_profession=16,
-    ):
-        # Parameters
-        self.df = df
-        self.labels_dict = labels_dict
-        self.inverse_label_dict = {v: k for k, v in labels_dict.items()}
-        self.group_var = group_var
-        self.intervention_var = intervention_var
-        self.titre_var = titre_var
-        self.profession_var = profession_var
-        self.max_len_padding = max_len_padding
-        self.max_len_padding_titre = max_len_padding_titre
-        self.max_len_padding_profession = max_len_padding_profession
+class AssembleeDataset(Dataset):
+    def __init__(self, records, bert_type, text_vars, features_vars, label_var):
+        self.records = records
+        self.bert_type = bert_type
+        self.text_vars = text_vars
+        self.features_vars = features_vars
+        self.label_var = label_var
 
-        # Inputs and labels
-        self.labels = [labels_dict[label] for label in df[group_var]]
-
-        self.interventions = [
-            tokenizer(
-                text,
-                padding="max_length",
-                max_length=max_len_padding,
-                truncation=True,
-                return_tensors="pt",
-            )
-            for text in df[intervention_var]
-        ]
-
-        self.titres = [
-            tokenizer(
-                text,
-                padding="max_length",
-                max_length=max_len_padding_titre,
-                truncation=True,
-                return_tensors="pt",
-            )
-            for text in df[titre_var]
-        ]
-
-        self.professions = [
-            tokenizer(
-                text,
-                padding="max_length",
-                max_length=max_len_padding_profession,
-                truncation=True,
-                return_tensors="pt",
-            )
-            for text in df[profession_var]
-        ]
-
-    def classes(self):
-        return self.labels
+        self.max_len_padding = 512
 
     def __len__(self):
-        return len(self.labels)
+        return len(self.records)
 
     def get_batch_labels(self, idx):
-        return np.array(self.labels[idx])
+        return self.records[idx][self.label_var]
 
     def get_batch_inputs(self, idx):
-        return {
-            "intervention": self.interventions[idx],
-            "titre": self.titres[idx],
-            "profession": self.professions[idx],
-        }
+        inputs = {var: self.records[idx][f"{self.bert_type}_tokens"][var] for var in self.text_vars}
+        if self.features_vars:
+            float_inputs = [float(self.records[idx][var]) for var in self.features_vars]
+            inputs["features"] = np.array(float_inputs)
+
+        return inputs
 
     def __getitem__(self, idx):
         batch_x = self.get_batch_inputs(idx)
@@ -88,84 +39,118 @@ class SeanceDataset(Dataset):
         return batch_x, batch_y
 
 
-def get_dataset(
-    tokenizer,
-    processed_df,
-    labels_dict,
-    group_var="groupe",
-    intervention_var="intervention",
-    titre_var="titre_complet",
-    profession_var="profession",
-    max_len_padding=512,
-    max_len_padding_titre=64,
-    max_len_padding_profession=16,
-    test_frac=0.25,
-    val_frac=0.2,
-):
-    X, y = np.arange(len(processed_df)), processed_df["groupe"]
-    test_frac = 0.25
-    val_frac = 0.2
+def collate_fn(data):
+    """
+    data: is a list of tuples with (example, label, length)
+          where 'example' is a tensor of arbitrary shape
+          and label/length are scalars
+    """
+    labels = torch.tensor([int(x[1]) for x in data])
 
+    padded_inputs = {}
+
+    keys = data[0][0].keys()
+
+    for var in keys:
+        if var == "features":
+            padded_inputs["features"] = torch.tensor(np.array([x[0][var] for x in data]))
+        else:
+            input_ids = pad_sequence(
+                [torch.tensor(x[0][var]["input_ids"]) for x in data], batch_first=True
+            )
+            attention_mask = pad_sequence(
+                [torch.tensor(x[0][var]["attention_mask"]) for x in data], batch_first=True
+            )
+            padded_inputs[var] = {"input_ids": input_ids, "attention_mask": attention_mask}
+
+    return padded_inputs, labels.long()
+
+
+def load_records(records_path):
+    with open(records_path, "rb") as f:
+        records = pickle.load(f)
+
+    return records
+
+
+def build_dataset_and_dataloader_from_config(conf_file, path_prefix="./"):
+    with open(conf_file, "r") as f:
+        conf = json.load(f)["dataset"]
+
+    records = load_records(path_prefix + conf["records_path"])
+
+    X = np.arange(len(records))
+    y = [record["groupe"] for record in records]
     idx_train, idx_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_frac, random_state=42, stratify=y
+        X, y, test_size=conf["test_pc"], random_state=conf["random_state"], stratify=y
     )
     idx_train, idx_val, y_train, y_val = train_test_split(
-        idx_train, y_train, test_size=val_frac, random_state=42, stratify=y_train
+        idx_train,
+        y_train,
+        test_size=conf["val_pc"],
+        random_state=conf["random_state"],
+        stratify=y_train,
     )
 
-    train_dataset = SeanceDataset(
-        tokenizer,
-        processed_df.iloc[idx_train],
-        labels_dict,
-        group_var=group_var,
-        intervention_var=intervention_var,
-        titre_var=titre_var,
-        profession_var=profession_var,
-        max_len_padding=max_len_padding,
-        max_len_padding_titre=max_len_padding_titre,
-        max_len_padding_profession=max_len_padding_profession,
+    train_records = [records[idx] for idx in idx_train]
+    test_records = [records[idx] for idx in idx_test]
+    val_records = [records[idx] for idx in idx_val]
+
+    train_dataset = AssembleeDataset(
+        records=train_records,
+        bert_type=conf["bert_type"],
+        text_vars=conf["text_vars"],
+        features_vars=conf["feature_vars"],
+        label_var=conf["label_var"],
+    )
+    test_dataset = AssembleeDataset(
+        records=test_records,
+        bert_type=conf["bert_type"],
+        text_vars=conf["text_vars"],
+        features_vars=conf["feature_vars"],
+        label_var=conf["label_var"],
+    )
+    val_dataset = AssembleeDataset(
+        records=val_records,
+        bert_type=conf["bert_type"],
+        text_vars=conf["text_vars"],
+        features_vars=conf["feature_vars"],
+        label_var=conf["label_var"],
     )
 
-    val_dataset = SeanceDataset(
-        tokenizer,
-        processed_df.iloc[idx_val],
-        labels_dict,
-        group_var=group_var,
-        intervention_var=intervention_var,
-        titre_var=titre_var,
-        profession_var=profession_var,
-        max_len_padding=max_len_padding,
-        max_len_padding_titre=max_len_padding_titre,
-        max_len_padding_profession=max_len_padding_profession,
-    )
-
-    test_dataset = SeanceDataset(
-        tokenizer,
-        processed_df.iloc[idx_test],
-        labels_dict,
-        group_var=group_var,
-        intervention_var=intervention_var,
-        titre_var=titre_var,
-        profession_var=profession_var,
-        max_len_padding=max_len_padding,
-        max_len_padding_titre=max_len_padding_titre,
-        max_len_padding_profession=max_len_padding_profession,
-    )
-
-    return train_dataset, val_dataset, test_dataset
-
-
-def get_dataloader(
-    train_dataset,
-    val_dataset,
-    test_dataset,
-    batch_size=32,
-    num_workers=8,
-):
     train_dataloader = DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers
+        train_dataset,
+        batch_size=conf["batch_size"],
+        collate_fn=collate_fn,
+        num_workers=conf["num_workers"],
+        prefetch_factor=conf["prefetch_factor"],
+        shuffle=conf["shuffle"],
+        pin_memory=conf["pin_memory"],
+        drop_last=conf["drop_last"],
     )
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, num_workers=num_workers)
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, num_workers=num_workers)
+    test_dataloader = DataLoader(
+        test_dataset,
+        batch_size=conf["batch_size"],
+        collate_fn=collate_fn,
+        num_workers=conf["num_workers"],
+        prefetch_factor=conf["prefetch_factor"],
+        pin_memory=conf["pin_memory"],
+        drop_last=False,
+        shuffle=False,
+    )
+    val_dataloader = DataLoader(
+        val_dataset,
+        batch_size=conf["batch_size"],
+        collate_fn=collate_fn,
+        num_workers=conf["num_workers"],
+        prefetch_factor=conf["prefetch_factor"],
+        pin_memory=conf["pin_memory"],
+        drop_last=False,
+        shuffle=False,
+    )
 
-    return train_dataloader, val_dataloader, test_dataloader
+    datasets = {"train": train_dataset, "test": test_dataset, "val": val_dataset}
+
+    loaders = {"train": train_dataloader, "test": test_dataloader, "val": val_dataloader}
+
+    return datasets, loaders
