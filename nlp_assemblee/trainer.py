@@ -1,160 +1,137 @@
+import json
+
 import pytorch_lightning as pl
-from torch import nn, optim
+import torch
+from pytorch_lightning import loggers as pl_loggers
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from torch import nn
+
+from models import build_classifier_from_config
 
 
-class LitClassifier(pl.LightningModule):
+class LitModel(pl.LightningModule):
     def __init__(
         self,
-        classifier: nn.Module,
-        optimizer_type: str,
-        loss_type: str,
+        # classifier: nn.Module,
+        path_conf_file: str,
     ):
         super().__init__()
-        self.classifier = classifier
-        self.criterion = criterion
+        self.model = build_classifier_from_config(path_conf_file)
+
+        self.train_parameters = build_trainer_from_config(path_conf_file)
+        self.criterion = self.train_parameters["loss"]
 
     def forward(self, x):
-        return self.classifier(**x)
+        return self.model(**x)
+
+    def configure_optimizers(self):
+        optimizer = self.train_parameters["optimizer"]
+        lr_scheduler = self.train_parameters["scheduler"]
+        return [optimizer], [lr_scheduler]
 
     def get_loss(self, batch, model_type="train"):
         x, y = batch
-        z = self.classifier(**x)
+        z = self.model(**x)
         loss = self.criterion(z, y)
         self.log(f"{model_type}_loss", loss)
         return loss
 
     def training_step(self, batch, batch_idx):
-        loss = self.get_loss(batch, model_type="train")
-        return loss
+        tain_loss = self.get_loss(batch, model_type="train")
+        return tain_loss
 
-    def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-3)
-        return optimizer
+    def validation_step(self, val_batch, batch_idx):
+        val_loss = self.get_loss(val_batch, model_type="val")
+        return val_loss
+
+    def testing_step(self, val_batch, batch_idx):
+        test_loss = self.get_loss(val_batch, model_type="test")
+        return test_loss
 
 
-class SeanceLitClassifier(pl.LightningModule):
-    def __init__(
-        self,
-        processed_df,
-        labels_dict,
-        batch_size=32,
-        num_workers=8,
-        type_bert="camembert",
-        freeze_bert=True,
-        intervention_dim=256,
-        titre_dim=128,
-        profession_dim=64,
-        bert_dim=768,
-        dropout=0.1,
-        lr=1e-4,
-    ):
-        super().__init__()
-        self.example_input_array = {
-            "intervention": torch.randint(0, 100, (32, 1, 512)),
-            "profession": torch.randint(0, 100, (32, 1, 16)),
-        }
+def build_trainer_from_config(conf_file):
+    model = build_classifier_from_config(conf_file)
 
-        # Parameters
-        self.num_classes = len(np.unique(list(labels_dict.values())))
-        self.processed_df = processed_df
-        self.labels_dict = labels_dict
-        self.batch_size = batch_size
-        self.num_workers = num_workers
-        self.type_bert = type_bert
-        self.freeze_bert = freeze_bert
-        self.intervention_dim = intervention_dim
-        self.titre_dim = titre_dim
-        self.profession_dim = profession_dim
-        self.bert_dim = bert_dim
-        self.dropout = dropout
-        self.lr = lr
+    with open(conf_file, "r") as f:
+        conf = json.load(f)["trainer"]
 
-        # Models
-        if type_bert == "camembert":
-            self.bert_model = CamembertModel.from_pretrained("camembert-base")
-            self.tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
-        else:
-            self.bert_model = BertModel.from_pretrained("bert-base-multilingual-cased")
-            self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
+    # Global config
+    num_epochs = conf["epochs"]
+    precision = conf["precision"]
+    list_metrics = conf["metrics"]
+    seed = conf["seed"]
 
-        if freeze_bert:
-            for p in self.bert_model.parameters():
-                p.requires_grad = False
+    # Optimizer config
+    if conf["optimizer"] == "Adam":
+        optimizer = torch.optim.Adam(model.parameters(), **conf["optimizer_kwargs"])
+    elif conf["optimizer"] == "SGD":
+        optimizer = torch.optim.SGD(model.parameters(), **conf["optimizer_kwargs"])
 
-        self.classifier = SeanceClassifier(
-            bert_model=self.bert_model,
-            num_classes=self.num_classes,
-            intervention_dim=intervention_dim,
-            titre_dim=titre_dim,
-            profession_dim=profession_dim,
-            bert_dim=bert_dim,
-            dropout=dropout,
+    # Loss config
+    if conf["loss"] == "CrossEntropyLoss":
+        criterion = nn.CrossEntropyLoss(**conf["loss_kwargs"])
+    elif conf["loss"] == "MSEloss":
+        criterion = nn.MSELoss(**conf["loss_kwargs"])
+
+    # Scheduler confg
+    if conf["scheduler"] == "ReduceLROnPlateau":
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, **conf["scheduler_kwargs"]
         )
 
-        # Save the hyperparameters
-        # See https://pytorch-lightning.readthedocs.io/en/latest/common/checkpointing_basic.html#save-a-checkpoint
-        self.save_hyperparameters()
+    # Tensorboard config
+    if conf["tensorboard"]:
+        tensorboard = pl_loggers.TensorBoardLogger(**conf["tensorboard_kwargs"])
+    else:
+        tensorboard = False
 
-    def forward(self, intervention, titre, profession):
-        return self.classifier(intervention, titre, profession)
+    # Checkpoint config
+    if conf["checkpoint"]:
+        checkpoint = ModelCheckpoint(**conf["checkpoint_kwargs"])
+    else:
+        checkpoint = None
 
-    def training_step(self, batch, batch_idx):
-        # training_step defines the train loop.
-        # it is independent of forward
-        x, y = batch
-        x_hat = self.forward(x["intervention"], x["titre"], x["profession"])
-        loss = nn.CrossEntropyLoss()(x_hat, y)
-        # Logging to TensorBoard by default
-        self.log("train_loss", loss)
-        return loss
+    # EarlyStopping config
+    if conf["early_stopping"]:
+        earlystop = EarlyStopping(**conf["early_stopping_kwargs"])
+    else:
+        earlystop = None
 
-    def test_step(self, batch, batch_idx):
-        # this is the test loop
-        # See more https://pytorch-lightning.readthedocs.io/en/latest/common/evaluation_basic.html
-        x, y = batch
-        x_hat = self.forward(x["intervention"], x["titre"], x["profession"])
-        test_loss = nn.CrossEntropyLoss()(x_hat, y)
-        # Logging to TensorBoard by default
-        self.log("test_loss", test_loss)
+    training_parameters = {
+        "seed": seed,
+        "optimizer": optimizer,
+        "loss": criterion,
+        "epochs": num_epochs,
+        "precision": precision,
+        "scheduler": scheduler,
+        "list_metrics": list_metrics,
+        "tensorboard_dir": tensorboard,
+        "checkpoint": [checkpoint],
+        "earlystop": [earlystop],
+    }
 
-    def validation_step(self, batch, batch_idx):
-        # this is the validation loop
-        x, y = batch
-        x_hat = self.forward(x["intervention"], x["titre"], x["profession"])
-        val_loss = nn.CrossEntropyLoss()(x_hat, y)
-        # Logging to TensorBoard by default
-        self.log("val_loss", val_loss)
+    return training_parameters
 
-    def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=self.lr)
-        return optimizer
 
-    def predict_step(self, batch, batch_idx, dataloader_idx=0):
-        return self(batch)
+def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file):
+    model = lightning_model()
+    trainer_parameters = build_trainer_from_config(path_conf_file)
 
-    def prepare_data(self):
-        self.train_data, self.val_data, self.test_data = get_dataset(
-            self.tokenizer,
-            self.processed_df,
-            self.labels_dict,
-            group_var="groupe",
-            intervention_var="intervention",
-            titre_var="titre_complet",
-            profession_var="profession",
-            max_len_padding=512,
-            max_len_padding_titre=64,
-            max_len_padding_profession=16,
-            test_frac=0.25,
-            val_frac=0.2,
-        )
+    if trainer_parameters["seed"]:
+        torch.manual_seed(trainer_parameters["seed"])
 
-    def train_dataloader(self):
-        return DataLoader(
-            self.train_data, batch_size=self.batch_size, shuffle=True, num_workers=self.batch_size
-        )
+    # Tensorboard config
+    tensorboard = trainer_parameters["tensorboard"]
 
-    def val_dataloader(self):
-        return DataLoader(self.val_data, batch_size=self.batch_size, num_workers=self.batch_size)
+    # Checkpoint config
+    checkpoint = trainer_parameters["checkpoint"]
 
-    def test_dataloader(self):
-        return DataLoader(self.test_data, batch_size=self.batch_size, num_workers=self.batch_size)
+    # EarlyStopping config
+    earlystop = trainer_parameters["earlystop"]
+
+    callbacks = checkpoint + earlystop
+    trainer = pl.Trainer(logger=tensorboard, callbacks=callbacks)
+    trainer.fit(model, train_loader, val_loader)
+
+    return None

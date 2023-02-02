@@ -75,19 +75,26 @@
             "precision",
             "recall"
         ],
-        "monitor": "f1",
-        "monitor_mode": "max",
-        "early_stopping": 10,
+        "early_stopping": true,
+        "early_stopping_kwargs":{
+            "patience":10,
+            "monitor": "f1",
+            "mode": "max"
+        },
         "checkpoint": true,
-        "checkpoint_monitor": "f1",
-        "checkpoint_monitor_mode": "max",
-        "checkpoint_dir": "checkpoints",
-        "checkpoint_filename": "TSP_C_256-M-L_BN_D_128_128_{epoch:02d}_{f1:.4f}.pt",
-        "checkpoint_save_top_k": 3,
-        "checkpoint_verbose": true,
+        "checkpoint_kwargs":{
+            "monitor": "f1",
+            "mode": "max",
+            "dirpath": "checkpoints",
+            "filename": "TSP_C_256-M-L_BN_D_128_128_{epoch:02d}_{f1:.4f}.pt",
+            "save_top_k": 3,
+            "checkpoint_verbose": true
+        },
         "tensorboard": true,
-        "tensorboard_dir": "tensorboard",
-        "tensorboard_filename": "TSP_C_256-M-L_BN_D_128_128",
+        "tensorboard_kwargs": {
+            "save_dir": "tensorboard",
+            "name": "TSP_C_256-M-L_BN_D_128_128"
+        },
         "tensorboard_verbose": true,
         "seed": 42
     }
