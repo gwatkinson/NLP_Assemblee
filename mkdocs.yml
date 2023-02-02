@@ -10,8 +10,8 @@ copyright: Copyright &copy; MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
 # Set the structure of the site
 nav:
   - Home: index.md
-  - Getting the Data:
-      - API: api/api.md
+  - API:
+      - Getting the data: api/api.md
       # - Fetch the data: notebooks/scrapping.ipynb
 
 # Set the theme
@@ -19,16 +19,20 @@ theme:
   name: material
   navigation_depth: 2
   scheme: default
+  logo: images/logo.png
+  favicon: images/logo.png
   palette:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: teal
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: teal
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
