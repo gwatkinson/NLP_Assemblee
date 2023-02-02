@@ -18,7 +18,7 @@ We used this website to fetch the textual data used in the project.
 !!! info "Wrapper function"
     We defined a wrapper function to simplify the use of the API. It fetches all the urls, interventions and the deputies information for a given legislature.
 
-    It is used to fetch the data in the [notebook](api/scrapping.ipynb).
+    It is used to fetch the data in the [notebook](../notebooks/scrapping.ipynb).
 
 ::: nlp_assemblee.api.fetch_data_for_legislature
 
