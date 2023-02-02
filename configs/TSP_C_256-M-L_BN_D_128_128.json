@@ -37,6 +37,12 @@
                 }
             }
         },
+        "feature_mlp": {
+            "mlp_dims": [2, 256],
+            "dropout": 0.0,
+            "negative_slope": 0.0,
+            "batch_norm": false
+        },
         "pooler_layer": {
             "concat_type": "mean"
         },
