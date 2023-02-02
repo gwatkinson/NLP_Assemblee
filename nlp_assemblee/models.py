@@ -1,17 +1,9 @@
-# Copyright (c) 2022 Gabriel WATKINSON and Jéremie STYM-POPPER
-# SPDX-License-Identifier: MIT
-
 import json
-from typing import Dict, List, Any
+from typing import Dict, List
 
 import torch
 from torch import nn
 from transformers import BertModel, CamembertModel
-
-from pytorch_lightning import loggers as pl_loggers
-from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-
 
 
 class BertLinear(nn.Module):
@@ -145,64 +137,3 @@ def build_classifier_from_config(conf_file):
     classifier = Classifier(bert_linears, pooler, mlp, conf["name"])
 
     return classifier
-
-def build_trainer_from_config(conf_file):
-    model = build_classifier_from_config(conf_file)
-
-    with open(conf_file, "r") as f:
-        conf = json.load(f)["trainer"]
-
-    # Global config
-    num_epochs = conf["epochs"]
-    precision = conf["precision"]
-    list_metrics = conf["metrics"]
-    seed = conf["seed"]
-    
-    # Optimizer config
-    if conf["optimizer"] == "Adam":
-        optimizer = torch.optim.Adam(model.parameters(), **conf["optimizer_kwargs"])
-    elif conf["optimizer"] == "SGD":
-        optimizer = torch.optim.SGD(model.parameters(), **conf["optimizer_kwargs"] )
-
-    # Loss config
-    if conf["loss"] == "CrossEntropyLoss":
-        criterion = nn.CrossEntropyLoss(**conf["loss_kwargs"])
-    elif conf["loss"] == "MSEloss":
-        criterion = nn.MSELoss(**conf["loss_kwargs"])
-
-    # Scheduler confg
-    if conf["scheduler"] == "ReduceLROnPlateau":
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, **conf["scheduler_kwargs"])
-
-    # Tensorboard config
-    if conf["tensorboard"]:
-        tensorboard = pl_loggers.TensorBoardLogger(**conf["tensorboard_kwargs"])
-    else:
-        tensorboard = False
-
-    # Checkpoint config
-    if conf["checkpoint"]:
-        checkpoint = ModelCheckpoint(**conf["checkpoint_kwargs"])
-    else:
-        checkpoint = None
-
-    # EarlyStopping config
-    if conf["early_stopping"]:
-        earlystop = EarlyStopping(**conf["early_stopping_kwargs"])
-    else:
-        earlystop = None
-
-    training_parameters = {
-        "seed": seed,
-        "optimizer":optimizer,
-        "loss":criterion,
-        "epochs":num_epochs,
-        "precision":precision,
-        "scheduler":scheduler,
-        "list_metrics":list_metrics,
-        "tensorboard_dir":tensorboard,
-        "checkpoint":[checkpoint],
-        "earlystop": [earlystop]
-    }
-
-    return training_parameters
