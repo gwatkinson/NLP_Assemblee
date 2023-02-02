@@ -54,19 +54,19 @@ class BertLinears(nn.Module):
         return [self.bert_layers[name](inputs[name]) for name in self.bert_layers]
 
 
-class BertLinearsPooler(nn.Module):
-    """Concatenate the outputs of the BertLinear layers."""
+class LinearPooler(nn.Module):
+    """Concatenate the outputs of the linear layers."""
 
     def __init__(self, concat_type: str, name: str = None) -> None:
         super().__init__()
         self.concat_type = concat_type
-        self.name = name or f"concat_{concat_type}"
+        self.name = name or f"pooler_{concat_type}"
 
-    def forward(self, *bert_linear_outputs: List[torch.Tensor]) -> torch.Tensor:
+    def forward(self, *linear_outputs: List[torch.Tensor]) -> torch.Tensor:
         if self.concat_type == "mean":
-            return torch.mean(torch.stack(bert_linear_outputs), dim=0)
+            return torch.mean(torch.stack(linear_outputs), dim=0)
         elif self.concat_type == "concat":
-            return torch.cat(bert_linear_outputs, dim=1)
+            return torch.cat(linear_outputs, dim=1)
 
 
 class MLPLayer(nn.Module):
@@ -107,20 +107,33 @@ class Classifier(nn.Module):
     def __init__(
         self,
         bert_layers: Dict[str, BertLinear],
-        pooler: BertLinearsPooler,
+        features_mlp: MLPLayer or None,
+        pooler: LinearPooler,
         mlp: MLPLayer,
         name: str = None,
     ) -> None:
         super().__init__()
         self.inputs_keys = list(bert_layers.keys())
         self.bert_linears = BertLinears(**bert_layers)
+        self.features_mlp = features_mlp
         self.pooler = pooler
         self.mlp = mlp
         self.name = name or f"classifier_{self.bert_linears.name}_{self.mlp.name}"
 
     def forward(self, **inputs: Dict[str, torch.Tensor]) -> List[torch.Tensor]:
-        bert_outputs = self.bert_linears(**inputs)
-        pooled_output = self.pooler(*bert_outputs)
+        keys = list(inputs.keys())
+
+        bert_inputs = {key: inputs[key] for key in keys if key != "features"}
+
+        bert_outputs = self.bert_linears(**bert_inputs)
+
+        if self.features_mlp is not None:
+            features_input = inputs["features"]
+            features_output = self.features_mlp(features_input)
+            pooled_output = self.pooler(*bert_outputs, features_output)
+        else:
+            pooled_output = self.pooler(*bert_outputs)
+
         pred = self.mlp(pooled_output)
 
         return pred
@@ -134,9 +147,10 @@ def build_classifier_from_config(conf_file):
         name: BertLinear(**conf["linear_layers"]["layers"][name])
         for name in conf["linear_layers"]["layers"]
     }
-    pooler = BertLinearsPooler(**conf["pooler_layer"])
+    features_mlp = MLPLayer(**conf["feature_mlp"])
+    pooler = LinearPooler(**conf["pooler_layer"])
     mlp = MLPLayer(**conf["mlp_layer"])
 
-    classifier = Classifier(bert_linears, pooler, mlp, conf["name"])
+    classifier = Classifier(bert_linears, features_mlp, pooler, mlp, conf["name"])
 
     return classifier
