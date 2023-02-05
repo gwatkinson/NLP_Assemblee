@@ -12,6 +12,7 @@ data/compiled/*_deputies.pkl
 data/compiled/*_complete.tsv
 data/processed/*_tokenizer.pkl
 data/processed/*_records.pkl
+.vscode
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
