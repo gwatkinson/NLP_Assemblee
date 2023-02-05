@@ -7,32 +7,28 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from torch import nn
 
-from models import build_classifier_from_config
+from nlp_assemblee.datasets import build_dataset_and_dataloader_from_config
+from nlp_assemblee.models import build_classifier_from_config
 
 
 class LitModel(pl.LightningModule):
-    def __init__(
-        self,
-        # classifier: nn.Module,
-        path_conf_file: str,
-    ):
+    def __init__(self, training_parameters):
         super().__init__()
-        self.model = build_classifier_from_config(path_conf_file)
-
-        self.train_parameters = build_trainer_from_config(path_conf_file)
-        self.criterion = self.train_parameters["loss"]
+        self.classifier = training_parameters["model"]
+        self.criterion = training_parameters["criterion"]
+        self.training_parameters = training_parameters
 
     def forward(self, x):
-        return self.model(**x)
+        return self.classifier(**x)
 
     def configure_optimizers(self):
-        optimizer = self.train_parameters["optimizer"]
-        lr_scheduler = self.train_parameters["scheduler"]
-        return [optimizer], [lr_scheduler]
+        optimizer = self.training_parameters["optimizer"]
+        # scheduler = self.training_parameters["scheduler"]
+        return optimizer
 
     def get_loss(self, batch, model_type="train"):
         x, y = batch
-        z = self.model(**x)
+        z = self.classifier(**x)
         loss = self.criterion(z, y)
         self.log(f"{model_type}_loss", loss)
         return loss
@@ -99,9 +95,10 @@ def build_trainer_from_config(conf_file):
         earlystop = None
 
     training_parameters = {
+        "model": model,
         "seed": seed,
         "optimizer": optimizer,
-        "loss": criterion,
+        "criterion": criterion,
         "epochs": num_epochs,
         "precision": precision,
         "scheduler": scheduler,
@@ -111,27 +108,29 @@ def build_trainer_from_config(conf_file):
         "earlystop": [earlystop],
     }
 
-    return training_parameters
+    lit_model = LitModel(training_parameters)
+
+    return lit_model, training_parameters
 
 
-def perform_lightning(lightning_model, train_loader, val_loader, path_conf_file):
-    model = lightning_model()
-    trainer_parameters = build_trainer_from_config(path_conf_file)
+def perform_lightning(path_conf_file):
+    datasets, loaders = build_dataset_and_dataloader_from_config(path_conf_file)
+    lit_model, training_parameters = build_trainer_from_config(path_conf_file)
 
-    if trainer_parameters["seed"]:
-        torch.manual_seed(trainer_parameters["seed"])
+    if training_parameters["seed"]:
+        torch.manual_seed(training_parameters["seed"])
 
     # Tensorboard config
-    tensorboard = trainer_parameters["tensorboard"]
+    tensorboard = training_parameters["tensorboard"]
 
     # Checkpoint config
-    checkpoint = trainer_parameters["checkpoint"]
+    checkpoint = training_parameters["checkpoint"]
 
     # EarlyStopping config
-    earlystop = trainer_parameters["earlystop"]
+    earlystop = training_parameters["earlystop"]
 
     callbacks = checkpoint + earlystop
     trainer = pl.Trainer(logger=tensorboard, callbacks=callbacks)
-    trainer.fit(model, train_loader, val_loader)
+    trainer.fit(lit_model, loaders["train"], loaders["val"])
 
-    return None
+    return trainer

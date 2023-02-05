@@ -104,7 +104,7 @@ class Classifier(nn.Module):
     def __init__(
         self,
         bert_layers: Dict[str, BertLinear],
-        features_mlp: MLPLayer or None,
+        features_mlp: MLPLayer | bool,
         pooler: LinearPooler,
         mlp: MLPLayer,
         name: str = None,
@@ -124,7 +124,7 @@ class Classifier(nn.Module):
 
         bert_outputs = self.bert_linears(**bert_inputs)
 
-        if self.features_mlp is not None:
+        if self.features_mlp:
             features_input = inputs["features"]
             features_output = self.features_mlp(features_input)
             pooled_output = self.pooler(*bert_outputs, features_output)
@@ -144,7 +144,10 @@ def build_classifier_from_config(conf_file):
         name: BertLinear(**conf["linear_layers"]["layers"][name])
         for name in conf["linear_layers"]["layers"]
     }
-    features_mlp = MLPLayer(**conf["feature_mlp"])
+    if conf["feature_mlp"]:
+        features_mlp = MLPLayer(**conf["feature_mlp"])
+    else:
+        features_mlp = False
     pooler = LinearPooler(**conf["pooler_layer"])
     mlp = MLPLayer(**conf["mlp_layer"])
 

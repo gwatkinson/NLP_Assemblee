@@ -347,6 +347,82 @@ class DataProcessing:
 
         return self.records
 
+    def tokenizing_process_padded(self):
+        """Tokenize the interventions with Camembert and BERT tokenizers.
+
+        Returns:
+            list[dict[str, Any]]: The list of records with the tokenized interventions and all
+                the other information.
+
+        Creates:
+            self.records (list[dict[str, Any]]): The list of records with the tokenized
+                interventions and all the other information.
+        """
+        self.records = self.short_interventions.to_dict(orient="records")
+        self.camembert_tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
+        self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-cased")
+
+        pbar = tqdm(self.records) if self.verbose else self.records
+        for record in pbar:
+            record["camembert_tokens"] = {
+                "intervention": self.camembert_tokenizer.encode(
+                    record["intervention"],
+                    add_special_tokens=True,
+                    truncation=True,
+                    padding="max_length",
+                    max_length=512,
+                ),
+                "titre_complet": self.camembert_tokenizer.encode(
+                    record["titre_complet"],
+                    add_special_tokens=True,
+                    truncation=True,
+                    padding="max_length",
+                    max_length=64,
+                ),
+                "titre": self.camembert_tokenizer.encode(
+                    record["titre"],
+                    add_special_tokens=True,
+                    truncation=True,
+                    padding="max_length",
+                    max_length=64,
+                ),
+                "profession": self.camembert_tokenizer.encode(
+                    record["profession"],
+                    add_special_tokens=True,
+                    truncation=True,
+                    padding="max_length",
+                    max_length=16,
+                ),
+            }
+            record["bert_tokens"] = {
+                "intervention": self.bert_tokenizer.encode(
+                    record["intervention"],
+                    truncation=True,
+                    padding="max_length",
+                    max_length=512,
+                ),
+                "titre_complet": self.bert_tokenizer.encode(
+                    record["titre_complet"],
+                    truncation=True,
+                    padding="max_length",
+                    max_length=64,
+                ),
+                "titre": self.bert_tokenizer.encode(
+                    record["titre"],
+                    truncation=True,
+                    padding="max_length",
+                    max_length=64,
+                ),
+                "profession": self.bert_tokenizer.encode(
+                    record["profession"],
+                    truncation=True,
+                    padding="max_length",
+                    max_length=16,
+                ),
+            }
+
+        return self.records
+
     def save_tables(self):
         """Save the generated tables."""
         path = Path(self.save)

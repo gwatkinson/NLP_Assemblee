@@ -1,5 +1,6 @@
 import json
 import pickle
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -55,13 +56,8 @@ def collate_fn(data):
         if var == "features":
             padded_inputs["features"] = torch.tensor(np.array([x[0][var] for x in data]))
         else:
-            input_ids = pad_sequence(
-                [torch.tensor(x[0][var]["input_ids"]) for x in data], batch_first=True
-            )
-            attention_mask = pad_sequence(
-                [torch.tensor(x[0][var]["attention_mask"]) for x in data], batch_first=True
-            )
-            padded_inputs[var] = {"input_ids": input_ids, "attention_mask": attention_mask}
+            input_ids = pad_sequence([torch.tensor(x[0][var]) for x in data], batch_first=True)
+            padded_inputs[var] = input_ids
 
     return padded_inputs, labels.long()
 
@@ -69,7 +65,6 @@ def collate_fn(data):
 def load_records(records_path):
     with open(records_path, "rb") as f:
         records = pickle.load(f)
-
     return records
 
 
@@ -77,7 +72,9 @@ def build_dataset_and_dataloader_from_config(conf_file, path_prefix="./"):
     with open(conf_file, "r") as f:
         conf = json.load(f)["dataset"]
 
-    records = load_records(path_prefix + conf["records_path"])
+    path = Path(path_prefix) / conf["records_path"]
+
+    records = load_records(path)
 
     X = np.arange(len(records))
     y = [record["groupe"] for record in records]
