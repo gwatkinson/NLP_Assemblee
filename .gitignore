@@ -3,14 +3,15 @@ models
 checkpoints
 lightning_logs
 old_data
+old_lightning_logs
 dataframes
 /data/api/*
 /data/compiled/*
 /data/processed/*
-!data/compiled/*_deputies.pkl
-!data/compiled/*_complete.tsv
-!data/processed/*_tokenizer.pkl
-!data/processed/*_records.pkl
+data/compiled/*_deputies.pkl
+data/compiled/*_complete.tsv
+data/processed/*_tokenizer.pkl
+data/processed/*_records.pkl
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
