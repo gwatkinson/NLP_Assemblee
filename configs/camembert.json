@@ -1,44 +1,44 @@
 {
-    "name": "TSP_C_256-M-L_BN_D_128_128",
+    "name": "C_TSP_SY_classic",
     "dataset": {
         "records_path": "data/processed/14th_records.pkl",
         "test_pc": 0.3,
-        "val_pc": 0.2,
+        "val_pc": 0.3,
         "label_var": "label",
         "text_vars": ["intervention", "titre_complet", "profession"],
-        "feature_vars": ["n_sexe", "n_year_naissance"],
+        "feature_vars": ["n_sexe", "n_y_naissance"],
         "bert_type": "camembert",
-        "batch_size": 32,
-        "num_workers": 4,
-        "prefetch_factor": 3,
+        "batch_size": 96,
+        "num_workers": 12,
+        "prefetch_factor": 4,
         "shuffle": true,
         "pin_memory": true,
         "drop_last": true,
         "random_state": 42
     },
     "classifier": {
-        "name": "TSP_C_256-M-L_BN_D_128_128",
+        "name": "C_TSP_SY_classic",
         "linear_layers": {
             "layers": {
                 "intervention": {
                     "bert_type": "camembert",
                     "frozen": true,
-                    "linear_dim": 256
+                    "linear_dim": 0
                 },
                 "titre_complet": {
                     "bert_type": "camembert",
                     "frozen": true,
-                    "linear_dim": 256
+                    "linear_dim": 0
                 },
                 "profession": {
                     "bert_type": "camembert",
                     "frozen": true,
-                    "linear_dim": 256
+                    "linear_dim": 0
                 }
             }
         },
         "feature_mlp": {
-            "mlp_dims": [2, 256],
+            "mlp_dims": [2, 768],
             "dropout": 0.0,
             "negative_slope": 0.0,
             "batch_norm": false
@@ -47,8 +47,8 @@
             "concat_type": "mean"
         },
         "mlp_layer": {
-            "mlp_dims": [256, 64, 64, 3],
-            "dropout": 0.1,
+            "mlp_dims": [768, 128, 128, 3],
+            "dropout": 0.0,
             "negative_slope": 0.01,
             "batch_norm": true
         }

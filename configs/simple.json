@@ -1,0 +1,86 @@
+{
+    "name": "C_T_simple",
+    "dataset": {
+        "records_path": "data/processed/14th_records.pkl",
+        "test_pc": 0.8,
+        "val_pc": 0.3,
+        "label_var": "label",
+        "text_vars": ["intervention"],
+        "feature_vars": false,
+        "bert_type": "camembert",
+        "batch_size": 64,
+        "num_workers": 8,
+        "prefetch_factor": 4,
+        "shuffle": true,
+        "pin_memory": true,
+        "drop_last": true,
+        "random_state": 42
+    },
+    "classifier": {
+        "name": "C_T_simple",
+        "linear_layers": {
+            "layers": {
+                "intervention": {
+                    "bert_type": "camembert",
+                    "frozen": true,
+                    "linear_dim": 768
+                }
+            }
+        },
+        "feature_mlp": false,
+        "pooler_layer": {
+            "concat_type": "mean"
+        },
+        "mlp_layer": {
+            "mlp_dims": [768, 512, 3],
+            "dropout": 0.1,
+            "negative_slope": 0.01,
+            "batch_norm": false
+        }
+    },
+    "trainer": {
+        "epochs": 100,
+        "precision": 16,
+        "optimizer": "Adam",
+        "optimizer_kwargs": {
+            "lr": 1e-3
+        },
+        "scheduler": "ReduceLROnPlateau",
+        "scheduler_kwargs": {
+            "mode": "max",
+            "factor": 0.1,
+            "patience": 5,
+            "verbose": true
+        },
+        "loss": "CrossEntropyLoss",
+        "loss_kwargs": {},
+        "metrics": [
+            "accuracy",
+            "f1",
+            "precision",
+            "recall"
+        ],
+        "early_stopping": true,
+        "early_stopping_kwargs":{
+            "patience":10,
+            "monitor": "f1",
+            "mode": "max"
+        },
+        "checkpoint": true,
+        "checkpoint_kwargs":{
+            "monitor": "f1",
+            "mode": "max",
+            "dirpath": "checkpoints",
+            "filename": "TSP_C_256-M-L_BN_D_128_128_{epoch:02d}_{f1:.4f}.pt",
+            "save_top_k": 3,
+            "checkpoint_verbose": true
+        },
+        "tensorboard": true,
+        "tensorboard_kwargs": {
+            "save_dir": "tensorboard",
+            "name": "TSP_C_256-M-L_BN_D_128_128"
+        },
+        "tensorboard_verbose": true,
+        "seed": 42
+    }
+}
