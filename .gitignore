@@ -5,6 +5,7 @@ lightning_logs
 old_data
 old_lightning_logs
 dataframes
+data
 /data/api/*
 /data/compiled/*
 /data/processed/*
