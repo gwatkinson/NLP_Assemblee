@@ -52,12 +52,16 @@ class CPCApi(object):
     nosdeputes.fr's API. It allows users to retrieve information about
     parliamentarians, as well as the interventions they have made.
 
-    The class provides asynchronous methods for fetching data, as well as methods for processing
-    and saving the data. Additionally, the class contains methods for handling pagination and
-    error handling. The class also provides a way to save the result of the request to a folder
+    The class provides asynchronous methods for fetching data, as well
+    as methods for processing
+    and saving the data. Additionally, the class contains methods for
+    handling pagination and
+    error handling. The class also provides a way to save the result of
+    the request to a folder
     or file.
 
-    The class uses aiohttp, asyncio and json library to make the request, parse the json and save
+    The class uses aiohttp, asyncio and json library to make the
+    request, parse the json and save
     the result to a file.
     """
 
