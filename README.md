@@ -58,13 +58,13 @@ To create the conda enviromnent named `YOURENV`, choose your platform and use th
 Create conda enviromnent for Linux-64:
 
 ```bash
-conda create --name YOURENV --file env_file/conda-linux-64.lock
+conda create --name YOURENV --file conda-linux-64.lock
 ```
 
 Create conda enviromnent for Windows-64:
 
 ```bash
-conda create --name YOURENV --file env_file/conda-win-64.lock
+conda create --name YOURENV --file conda-win-64.lock
 ```
 
 This can take a while since there are many packages that are quite big (namely pytorch).

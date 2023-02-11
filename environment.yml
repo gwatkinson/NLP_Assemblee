@@ -26,6 +26,8 @@ dependencies:
   - python-graphviz=0.20
   - torchview=0.2
   - pytorch-model-summary
+  - tensorboard=2.11
+  - sentence-transformers=2.2
 
   # Other classic data and ML packages
   - numpy=1.23
