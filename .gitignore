@@ -14,6 +14,7 @@ data/compiled/*_complete.tsv
 data/processed/*_tokenizer.pkl
 data/processed/*_records.pkl
 .vscode
+.python-version
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
