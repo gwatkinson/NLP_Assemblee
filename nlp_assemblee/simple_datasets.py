@@ -1,20 +1,21 @@
-import pickle
 from pathlib import Path
 
+import numpy as np
+import torch
 from torch.utils.data import DataLoader, Dataset
 
 
 class AssembleeDataset(Dataset):
-    def __init__(self, root, bert_type, phase, text_vars, use_features, label_var):
+    def __init__(self, path, phase, text_vars, use_features, label_var="label"):
         super().__init__()
-        self.path = Path(root) / f"{bert_type}_embeddings_{phase}.pkl"
+        self.path = Path(path) / f"precomputed_{phase}.pkl"
         self.records = self.load_records()
 
         self.labels = self.records[label_var]
 
         self.use_features = use_features
         if use_features:
-            self.features = self.records["features"]
+            self.features = np.vstack([self.records["sexe"], self.records["n_y_naissance"]])
         else:
             self.features = False
 
@@ -26,8 +27,8 @@ class AssembleeDataset(Dataset):
 
     def load_records(self):
         with open(self.path, "rb") as f:
-            records = pickle.load(f)
-        return records
+            data = torch.load(f)
+        return data
 
     def __len__(self):
         return len(self.labels)
