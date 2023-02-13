@@ -2,17 +2,9 @@
 models
 checkpoints
 lightning_logs
-old_data
-old_lightning_logs
+old_*
 dataframes
 data
-/data/api/*
-/data/compiled/*
-/data/processed/*
-data/compiled/*_deputies.pkl
-data/compiled/*_complete.tsv
-data/processed/*_tokenizer.pkl
-data/processed/*_records.pkl
 .vscode
 .python-version
 
