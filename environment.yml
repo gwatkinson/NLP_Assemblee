@@ -51,6 +51,7 @@ dependencies:
   - plotly=5.11
   - python-kaleido=0.2
   - streamlit=1.9
+  - rich=13.3
 
   # CLI
   - pre-commit=3.0
