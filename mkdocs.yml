@@ -10,7 +10,17 @@ copyright: Copyright &copy; MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
 # Set the structure of the site
 nav:
   - Home: index.md
-  - API:
+  - Scrapping the data: notebooks/scrapping.ipynb
+  - Data Processing and Exploration: notebooks/data_processing.ipynb
+  - Precomputing the embeddings: notebooks/precompute.ipynb
+  - Experiments:
+      - Dummy Classifier: notebooks/experiments/dummy_classifier.ipynb
+      - Baseline Model: notebooks/experiments/base_training.ipynb
+  - Python API:
+      - Scrapping the data: simple/scrapping.md
+      - Data Processing: simple/data_processing.md
+      - Building the Pytorch Dataset: simple/dataset.md
+  - Older API:
       - Getting the data: api/api.md
       # - Fetch the data: notebooks/scrapping.ipynb
 
@@ -64,12 +74,15 @@ plugins:
   #     repository: gwatkinson/NLP_Assemblee/
       # branch: main
   - mkdocstrings
-  # - mkdocs-jupyter
+  - mkdocs-jupyter:
+      execute_notebooks: false
+      allow_errors: true
 
 # Set markdown extensions
 markdown_extensions:
   - abbr
   - admonition
+  - codehilite
   - pymdownx.details
   - pymdownx.superfences
   - def_list
