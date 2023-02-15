@@ -75,7 +75,7 @@ plugins:
       # branch: main
   - mkdocstrings
   - mkdocs-jupyter:
-      execute_notebooks: false
+      execute: false
       allow_errors: true
 
 # Set markdown extensions
@@ -85,6 +85,8 @@ markdown_extensions:
   - codehilite
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
   - def_list
   - mkdocs-click
   - mkdocs_graphviz
