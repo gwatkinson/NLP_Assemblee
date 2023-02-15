@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class AssembleeDataset(Dataset):
-    def __init__(self, root, phase, text_vars, use_features, label_var="label"):
+    def __init__(self, root, phase, text_vars, use_features, label_var="label", drop_center=False):
         super().__init__()
         self.path = Path(root) / f"precomputed_{phase}.pkl"
         self.records = self.load_records()
@@ -15,7 +15,7 @@ class AssembleeDataset(Dataset):
 
         self.use_features = use_features
         if use_features:
-            self.features = np.vstack([self.records["sexe"], self.records["n_y_naissance"]])
+            self.features = np.hstack([self.records["sexe"], self.records["n_y_naissance"]]).T
         else:
             self.features = False
 
@@ -24,6 +24,13 @@ class AssembleeDataset(Dataset):
             self.text = {var: self.records[var] for var in text_vars}
         else:
             self.text = False
+
+        if drop_center:
+            idx_to_keep = np.where(self.labels != 1)[0]
+            self.labels = self.labels[idx_to_keep]
+            self.labels = (self.labels / 2).astype(int)
+            self.features = self.features[idx_to_keep]
+            self.text = {var: self.text[var][idx_to_keep] for var in self.text_vars}
 
     def load_records(self):
         with open(self.path, "rb") as f:
@@ -53,10 +60,10 @@ class AssembleeDataset(Dataset):
 def get_single_dataloader(
     root,
     phase,
-    bert_type,
     batch_size,
     text_vars,
     use_features,
+    drop_center=False,
     label_var="label",
     num_workers=2,
     prefetch_factor=3,
@@ -67,6 +74,7 @@ def get_single_dataloader(
         phase=phase,
         text_vars=text_vars,
         use_features=use_features,
+        drop_center=drop_center,
         label_var=label_var,
     )
     loader = DataLoader(
@@ -82,11 +90,11 @@ def get_single_dataloader(
 
 def get_dataloader(
     root,
-    bert_type,
     batch_size,
     text_vars,
     use_features,
     label_var="label",
+    drop_center=False,
     num_workers=2,
     prefetch_factor=3,
     pin_memory=True,
@@ -96,6 +104,7 @@ def get_dataloader(
         phase="train",
         text_vars=text_vars,
         use_features=use_features,
+        drop_center=drop_center,
         label_var=label_var,
     )
     testset = AssembleeDataset(
@@ -103,6 +112,7 @@ def get_dataloader(
         phase="test",
         text_vars=text_vars,
         use_features=use_features,
+        drop_center=drop_center,
         label_var=label_var,
     )
     valset = AssembleeDataset(
@@ -110,6 +120,7 @@ def get_dataloader(
         phase="val",
         text_vars=text_vars,
         use_features=use_features,
+        drop_center=drop_center,
         label_var=label_var,
     )
 

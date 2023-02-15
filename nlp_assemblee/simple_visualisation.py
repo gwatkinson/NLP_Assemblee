@@ -58,16 +58,35 @@ def calculate_metrics(results):
         "jaccard_macro": jaccard_score(y_true, y_pred, average="macro"),
         "matthews_weighted": matthews_corrcoef(y_true, y_pred),
         "hamming_loss": hamming_loss(y_true, y_pred),
-        "confusion_matrix": confusion_matrix(y_true, y_pred, labels=["Gauche", "Centre", "Droite"]),
-        "confusion_matrix_true_normed": confusion_matrix(
-            y_true, y_pred, labels=["Gauche", "Centre", "Droite"], normalize="true"
-        ),
-        "confusion_matrix_pred_normed": confusion_matrix(
-            y_true, y_pred, labels=["Gauche", "Centre", "Droite"], normalize="pred"
-        ),
-        "confusion_matrix_all_normed": confusion_matrix(
-            y_true, y_pred, labels=["Gauche", "Centre", "Droite"], normalize="all"
-        ),
+        "confusion_matrix": confusion_matrix(y_true, y_pred).tolist(),
+        "confusion_matrix_true_normed": confusion_matrix(y_true, y_pred, normalize="true").tolist(),
+        "confusion_matrix_pred_normed": confusion_matrix(y_true, y_pred, normalize="pred").tolist(),
+        "confusion_matrix_all_normed": confusion_matrix(y_true, y_pred, normalize="all").tolist(),
+    }
+
+    return metrics
+
+
+def calculate_metrics_binary(results):
+    y_true = results["labels"]
+    y_pred = results["predictions"]
+    probs = results["probs"][:, 1]
+
+    metrics = {
+        "log_loss": log_loss(y_true, probs),
+        "accuracy": accuracy_score(y_true, y_pred),
+        "balanced_accuracy": balanced_accuracy_score(y_true, y_pred),
+        "recall": recall_score(y_true, y_pred, average="binary"),
+        "precision": precision_score(y_true, y_pred, average="binary"),
+        "f1_score": f1_score(y_true, y_pred, average="binary"),
+        "AUC": roc_auc_score(y_true, probs),
+        "jaccard_weighted": jaccard_score(y_true, y_pred, average="binary"),
+        "matthews_weighted": matthews_corrcoef(y_true, y_pred),
+        "hamming_loss": hamming_loss(y_true, y_pred),
+        "confusion_matrix": confusion_matrix(y_true, y_pred).tolist(),
+        "confusion_matrix_true_normed": confusion_matrix(y_true, y_pred, normalize="true").tolist(),
+        "confusion_matrix_pred_normed": confusion_matrix(y_true, y_pred, normalize="pred").tolist(),
+        "confusion_matrix_all_normed": confusion_matrix(y_true, y_pred, normalize="all").tolist(),
     }
 
     return metrics
@@ -156,6 +175,7 @@ def plot_precision_recall_curve(results, figsize=(6, 6), palette="deep"):
     ax.set_ylabel("Precision / Recall / F1-score")
     ax.set_title("Multiclass precision, recall and f1-score")
     ax.legend()
+    fig.tight_layout()
     plt.show()
 
     return fig
@@ -200,7 +220,7 @@ def plot_roc_curve(results, figsize=(6, 6), palette="deep"):
 
     print(f"Macro-averaged One-vs-Rest ROC AUC score:\n{roc_auc['macro']:.2f}")
 
-    colors = sns.color_palette("deep")
+    colors = sns.color_palette(palette)
     for class_id, color in zip(range(n_classes), colors):
         RocCurveDisplay.from_predictions(
             y_onehot_test[:, class_id],
@@ -233,19 +253,79 @@ def plot_roc_curve(results, figsize=(6, 6), palette="deep"):
     ax.set_xlabel("False Positive Rate")
     ax.set_ylabel("True Positive Rate")
     ax.set_title("Extension of Receiver Operating Characteristic\nto One-vs-Rest multiclass")
+    fig.tight_layout()
+    plt.show()
+
+    return fig
+
+
+def plot_roc_curve_binary(results, figsize=(6, 6), palette="deep"):
+    y_true = results["labels"]
+    y_score = results["probs"][:, 1]
+
+    fig, ax = plt.subplots(figsize=figsize)
+    colors = sns.color_palette(palette)
+
+    fpr, tpr, thresholds = roc_curve(y_true, y_score)
+    roc_auc = auc(fpr, tpr)
+
+    ax.plot(
+        fpr,
+        tpr,
+        label=f"ROC curve (AUC = {roc_auc:.2f})",
+        color=colors[0],
+        linestyle="-",
+        linewidth=1.5,
+    )
+
+    ax.plot([0, 1], [0, 1], "k--", label="ROC curve for chance level (AUC = 0.5)")
+    ax.axis("square")
+    ax.set_xlabel("False Positive Rate")
+    ax.set_ylabel("True Positive Rate")
     ax.legend()
+    fig.tight_layout()
+    plt.show()
+
+    return fig
+
+
+def plot_precision_recall_curve_binary(results, figsize=(6, 6), palette="deep"):
+    y_true = results["labels"]
+    y_score = results["probs"][:, 1]
+
+    fig, ax = plt.subplots(figsize=figsize)
+    colors = sns.color_palette(palette)
+
+    precision, recall, threshold = precision_recall_curve(y_true, y_score)
+    f1 = 2 * (precision * recall) / (precision + recall)
+
+    ax.plot([0] + list(threshold), f1, color=colors[2], linestyle="-", lw=1.5, label="F1-score")
+    ax.plot(
+        [0] + list(threshold), precision, color=colors[0], linestyle="-.", lw=1, label="Precision"
+    )
+    ax.plot([0] + list(threshold), recall, color=colors[1], linestyle="--", lw=1, label="Recall")
+
+    ax.axis("square")
+    ax.set_xlabel("Threshold")
+    ax.set_ylabel("Precision / Recall / F1-score")
+    ax.legend()
+    fig.tight_layout()
     plt.show()
 
     return fig
 
 
 def plot_confusion_matrix(results, figsize=(6, 6), normalized=None):
-    y_pred = results["preds"]
+    y_pred = results["predictions"]
     y_true = results["labels"]
 
     fig, ax = plt.subplots(figsize=figsize)
 
-    target_names = ["Gauche", "Centre", "Droite"]
+    n_classes = len(np.unique(y_true))
+    if n_classes == 2:
+        target_names = ["Gauche", "Droite"]
+    else:
+        target_names = ["Gauche", "Centre", "Droite"]
 
     cm = confusion_matrix(y_true, y_pred, normalize=normalized)
 
@@ -254,7 +334,7 @@ def plot_confusion_matrix(results, figsize=(6, 6), normalized=None):
         annot=True,
         cmap="Blues",
         square=True,
-        fmt=".2%" if normalized else None,
+        fmt=".2%" if normalized else ".0f",
         cbar=False,
         xticklabels=target_names,
         yticklabels=target_names,
@@ -263,8 +343,7 @@ def plot_confusion_matrix(results, figsize=(6, 6), normalized=None):
 
     ax.set_xlabel("Predicted label")
     ax.set_ylabel("True label")
-    ax.set_title("Confusion matrix")
-    ax.axis("square")
+    fig.tight_layout()
     plt.show()
 
     return fig
