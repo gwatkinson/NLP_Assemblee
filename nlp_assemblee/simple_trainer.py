@@ -1,8 +1,25 @@
+import pickle
+from pathlib import Path
+
 import numpy as np
 import pytorch_lightning as pl
+import torch
 from torch import nn, optim
 
 from nlp_assemblee.simple_datasets import get_single_dataloader
+
+
+def load_embedding(path, var, freeze=True):
+    folder_path = Path(path)
+    f = folder_path / f"{var}/embeddings.pkl"
+    assert f.exists()
+    with open(f, "rb") as f:
+        embs = pickle.load(f)["embeddings"]
+
+    layer = nn.Embedding.from_pretrained(torch.tensor(embs), freeze=freeze)
+    layer.name = f"Embedding_{var}"
+
+    return layer
 
 
 class LitModel(pl.LightningModule):
@@ -41,6 +58,11 @@ class LitModel(pl.LightningModule):
             self.criterion = nn.functional.cross_entropy
 
         self.classifier = classifier
+
+        try:
+            self.example_input_array = classifier.example_input_array
+        except Exception:
+            print("Didn't find example input array")
 
     def forward(self, **x):
         return self.classifier(**x)

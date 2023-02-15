@@ -1,14 +1,14 @@
+import pickle
 from pathlib import Path
 
 import numpy as np
-import torch
 from torch.utils.data import DataLoader, Dataset
 
 
 class AssembleeDataset(Dataset):
-    def __init__(self, path, phase, text_vars, use_features, label_var="label"):
+    def __init__(self, root, phase, text_vars, use_features, label_var="label"):
         super().__init__()
-        self.path = Path(path) / f"precomputed_{phase}.pkl"
+        self.path = Path(root) / f"precomputed_{phase}.pkl"
         self.records = self.load_records()
 
         self.labels = self.records[label_var]
@@ -27,7 +27,7 @@ class AssembleeDataset(Dataset):
 
     def load_records(self):
         with open(self.path, "rb") as f:
-            data = torch.load(f)
+            data = pickle.load(f)
         return data
 
     def __len__(self):
@@ -64,7 +64,6 @@ def get_single_dataloader(
 ):
     dataset = AssembleeDataset(
         root=root,
-        bert_type=bert_type,
         phase=phase,
         text_vars=text_vars,
         use_features=use_features,
@@ -94,7 +93,6 @@ def get_dataloader(
 ):
     trainset = AssembleeDataset(
         root=root,
-        bert_type=bert_type,
         phase="train",
         text_vars=text_vars,
         use_features=use_features,
@@ -102,7 +100,6 @@ def get_dataloader(
     )
     testset = AssembleeDataset(
         root=root,
-        bert_type=bert_type,
         phase="test",
         text_vars=text_vars,
         use_features=use_features,
@@ -110,7 +107,6 @@ def get_dataloader(
     )
     valset = AssembleeDataset(
         root=root,
-        bert_type=bert_type,
         phase="val",
         text_vars=text_vars,
         use_features=use_features,

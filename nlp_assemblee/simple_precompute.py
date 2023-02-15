@@ -82,11 +82,7 @@ def get_embeddings_list_from_hugging(
         input_ids = encoded_input["input_ids"].to(device)
         attention_mask = encoded_input["attention_mask"].to(device)
         with torch.no_grad():
-            model_output = model(
-                input_ids,
-                attention_mask=attention_mask,
-                output_hidden_states=(pooled_output == "cls"),
-            )
+            model_output = model(input_ids, attention_mask=attention_mask)
         sentence_embeddings = (
             mean_pooling(model_output, attention_mask, pooled_output=pooled_output).cpu().numpy()
         )
@@ -111,11 +107,7 @@ def get_embeddings_dict_from_hugging(
         input_ids = encoded_input["input_ids"].to(device)
         attention_mask = encoded_input["attention_mask"].to(device)
         with torch.no_grad():
-            model_output = model(
-                input_ids,
-                attention_mask=attention_mask,
-                output_hidden_states=(pooled_output == "cls"),
-            )
+            model_output = model(input_ids, attention_mask=attention_mask)
         sentence_embeddings = (
             mean_pooling(model_output, attention_mask, pooled_output=pooled_output).cpu().numpy()
         )

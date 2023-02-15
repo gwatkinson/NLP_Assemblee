@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,6 +10,7 @@ from sklearn.metrics import (
     accuracy_score,
     auc,
     balanced_accuracy_score,
+    confusion_matrix,
     f1_score,
     hamming_loss,
     jaccard_score,
@@ -19,6 +22,7 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve,
 )
+from torchview import draw_graph
 
 sns.set_context("paper")
 sns.set_palette("deep")
@@ -54,6 +58,16 @@ def calculate_metrics(results):
         "jaccard_macro": jaccard_score(y_true, y_pred, average="macro"),
         "matthews_weighted": matthews_corrcoef(y_true, y_pred),
         "hamming_loss": hamming_loss(y_true, y_pred),
+        "confusion_matrix": confusion_matrix(y_true, y_pred, labels=["Gauche", "Centre", "Droite"]),
+        "confusion_matrix_true_normed": confusion_matrix(
+            y_true, y_pred, labels=["Gauche", "Centre", "Droite"], normalize="true"
+        ),
+        "confusion_matrix_pred_normed": confusion_matrix(
+            y_true, y_pred, labels=["Gauche", "Centre", "Droite"], normalize="pred"
+        ),
+        "confusion_matrix_all_normed": confusion_matrix(
+            y_true, y_pred, labels=["Gauche", "Centre", "Droite"], normalize="all"
+        ),
     }
 
     return metrics
@@ -223,3 +237,55 @@ def plot_roc_curve(results, figsize=(6, 6), palette="deep"):
     plt.show()
 
     return fig
+
+
+def plot_confusion_matrix(results, figsize=(6, 6), normalized=None):
+    y_pred = results["preds"]
+    y_true = results["labels"]
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    target_names = ["Gauche", "Centre", "Droite"]
+
+    cm = confusion_matrix(y_true, y_pred, normalize=normalized)
+
+    sns.heatmap(
+        cm,
+        annot=True,
+        cmap="Blues",
+        square=True,
+        fmt=".2%" if normalized else None,
+        cbar=False,
+        xticklabels=target_names,
+        yticklabels=target_names,
+        ax=ax,
+    )
+
+    ax.set_xlabel("Predicted label")
+    ax.set_ylabel("True label")
+    ax.set_title("Confusion matrix")
+    ax.axis("square")
+    plt.show()
+
+    return fig
+
+
+def plot_network_graph(net, device="cpu", model_name="model", path=None):
+    save = path is not None
+    if save:
+        path = Path(path)
+        path.mkdir(parents=True, exist_ok=True)
+        filename = path / "graph_architecture.png"
+
+    input_data = net.example_input_array
+    graph = draw_graph(
+        net,
+        input_data=input_data,
+        graph_name=model_name,
+        device=device,
+        expand_nested=True,
+        save_graph=save,
+        filename=filename,
+    )
+
+    return graph.visual_graph
