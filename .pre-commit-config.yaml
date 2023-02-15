@@ -58,7 +58,7 @@ repos:
       - id: nbqa-isort
         args: ["--profile=black", "--float-to-top"]
       - id: nbqa-flake8
-        args: ["--max-line-length=100", "--ignore=E402,W503,F841,F401,W605,E203"]
+        args: ["--max-line-length=100", "--ignore=E402,W503,F841,F401,W605,E203,E266"]
         # "--ignore=E402=E101, E111, E114, E115, E116, E117, E121, E122, E123, E124, E125, E126, E127, E128, E129, E131, E133, E2, E3, E5, E701, E702, E703, E704, W1, W2, W3, W503, W504",
       # -   repo: https://github.com/Lucas-C/pre-commit-hooks
 #     rev: v1.3.1
