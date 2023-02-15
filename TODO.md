@@ -25,3 +25,4 @@
   * [ ] 5. Try ensemble learning
 * Report
   * [ ] 1. Start the report
+  * [ ] Citer https://arxiv.org/pdf/1908.10084.pdf
