@@ -66,3 +66,9 @@ repos:
 #     -   id: insert-license
 #         files: \.py$
 #         args: [ "--license-filepath", "env_file/disclaimer.txt" ]
+
+-   repo: https://github.com/mwouts/jupytext
+    rev: v1.14.0  # CURRENT_TAG/COMMIT_HASH
+    hooks:
+    - id: jupytext
+      args: [--sync]
