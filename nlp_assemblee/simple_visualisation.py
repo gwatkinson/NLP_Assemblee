@@ -70,7 +70,7 @@ def calculate_metrics(results):
 def calculate_metrics_binary(results):
     y_true = results["labels"]
     y_pred = results["predictions"]
-    probs = results["probs"][:, 1]
+    probs = results["probs"]
 
     metrics = {
         "log_loss": log_loss(y_true, probs),
@@ -79,7 +79,7 @@ def calculate_metrics_binary(results):
         "recall": recall_score(y_true, y_pred, average="binary"),
         "precision": precision_score(y_true, y_pred, average="binary"),
         "f1_score": f1_score(y_true, y_pred, average="binary"),
-        "AUC": roc_auc_score(y_true, probs),
+        "AUC": roc_auc_score(y_true, probs[:, 1]),
         "jaccard_weighted": jaccard_score(y_true, y_pred, average="binary"),
         "matthews_weighted": matthews_corrcoef(y_true, y_pred),
         "hamming_loss": hamming_loss(y_true, y_pred),
@@ -299,11 +299,11 @@ def plot_precision_recall_curve_binary(results, figsize=(6, 6), palette="deep"):
     precision, recall, threshold = precision_recall_curve(y_true, y_score)
     f1 = 2 * (precision * recall) / (precision + recall)
 
-    ax.plot([0] + list(threshold), f1, color=colors[2], linestyle="-", lw=1.5, label="F1-score")
+    ax.plot([0] + list(threshold), f1, color=colors[0], linestyle="-", lw=1.5, label="F1-score")
     ax.plot(
-        [0] + list(threshold), precision, color=colors[0], linestyle="-.", lw=1, label="Precision"
+        [0] + list(threshold), precision, color=colors[1], linestyle="-", lw=1, label="Precision"
     )
-    ax.plot([0] + list(threshold), recall, color=colors[1], linestyle="--", lw=1, label="Recall")
+    ax.plot([0] + list(threshold), recall, color=colors[2], linestyle="-", lw=1, label="Recall")
 
     ax.axis("square")
     ax.set_xlabel("Threshold")
@@ -354,7 +354,7 @@ def plot_network_graph(net, device="cpu", model_name="model", path=None):
     if save:
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        filename = path / "graph_architecture.png"
+        filename = path / "graph_architecture"
 
     input_data = net.example_input_array
     graph = draw_graph(

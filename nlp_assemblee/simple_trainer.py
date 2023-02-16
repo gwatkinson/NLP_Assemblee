@@ -84,6 +84,10 @@ class LitModel(pl.LightningModule):
             optimizer = optim.RMSprop(
                 self.classifier.parameters(), lr=self.learning_rate, **self.optimizer_kwargs
             )
+        elif self.optimizer_type == "Adagrad":
+            optimizer = optim.Adagrad(
+                self.classifier.parameters(), lr=self.learning_rate, **self.optimizer_kwargs
+            )
         return optimizer
 
     def get_scheduler_from_string(self, optimizer):
@@ -104,7 +108,7 @@ class LitModel(pl.LightningModule):
         elif scheduler_type == "CosineAnnealingLR":
             lr_scheduler = optim.lr_scheduler.CosineAnnealingLR(
                 optimizer,
-                T_max=self.scheduler_kwargs.pop("T_max", 10),
+                T_max=self.scheduler_kwargs.pop("T_max", 1000),
                 eta_min=self.scheduler_kwargs.pop("eta_min", 0),
             )
         elif scheduler_type == "CyclicLR":
@@ -122,6 +126,11 @@ class LitModel(pl.LightningModule):
                 pct_start=self.scheduler_kwargs.pop("pct_start", 0.3),
                 epochs=self.scheduler_kwargs.pop("epochs", 30),
                 steps_per_epoch=self.scheduler_kwargs.pop("steps_per_epoch", 100),
+            )
+        elif scheduler_type == "ExponentialLR":
+            lr_scheduler = optim.lr_scheduler.ExponentialLR(
+                optimizer,
+                gamma=self.scheduler_kwargs.pop("gamma", 0.1),
             )
         return lr_scheduler
 
