@@ -1,0 +1,661 @@
+strict digraph "camembert-base" {
+	graph [ordering=in rankdir=TB size="43.199999999999996,43.199999999999996"]
+	node [align=left fontname="Linux libertine" fontsize=10 height=0.2 margin=0 ranksep=0.1 shape=plaintext style=filled]
+	edge [fontsize=10]
+	0 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>input-tensor<BR/>depth:0</TD><TD>(32, 768)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+	1 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>input-tensor<BR/>depth:0</TD><TD>(32,)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+	2 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>input-tensor<BR/>depth:0</TD><TD>(32,)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+	3 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>input-tensor<BR/>depth:0</TD><TD>(32, 2)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+	4 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">float<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 2) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 2) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	subgraph cluster_2 {
+		fontsize=12 label=LinearUnit labeljust=l style=dashed
+		subgraph cluster_3 {
+			fontsize=12 label=Sequential labeljust=l style=dashed
+			5 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Dropout<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			6 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Linear<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			7 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">GELU<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+	}
+	8 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Embedding<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32,) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+	subgraph cluster_4 {
+		fontsize=12 label=LinearUnit labeljust=l style=dashed
+		subgraph cluster_5 {
+			fontsize=12 label=Sequential labeljust=l style=dashed
+			9 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Dropout<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			10 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Linear<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			11 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">GELU<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+	}
+	12 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Embedding<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32,) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+	subgraph cluster_6 {
+		fontsize=12 label=LinearUnit labeljust=l style=dashed
+		subgraph cluster_7 {
+			fontsize=12 label=Sequential labeljust=l style=dashed
+			13 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Dropout<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			14 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Linear<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			15 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">GELU<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+	}
+	subgraph cluster_8 {
+		fontsize=12 label=Sequential labeljust=l style=dashed
+		subgraph cluster_9 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			16 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 2) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 16) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		subgraph cluster_10 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			17 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 16) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 32) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+	}
+	18 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">unsqueeze<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	19 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">unsqueeze<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	20 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">unsqueeze<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	21 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">cat<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">3 x (32, 1, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	subgraph cluster_11 {
+		fontsize=12 label=Sequential labeljust=l style=dashed
+		subgraph cluster_12 {
+			fontsize=12 label=AttentionUnit labeljust=l style=dashed
+			22 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			23 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			24 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			25 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">MultiheadAttention<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">3 x (32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			26 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">add<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">2 x (32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+			27 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LayerNorm<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			28 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			29 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">add<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">2 x (32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+			30 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LayerNorm<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		subgraph cluster_13 {
+			fontsize=12 label=AttentionUnit labeljust=l style=dashed
+			31 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			32 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			33 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			34 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">MultiheadAttention<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">3 x (32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			35 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">add<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">2 x (32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+			36 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LayerNorm<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			37 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LinearUnit<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			38 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">add<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">2 x (32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+			39 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">LayerNorm<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+	}
+	40 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">__getitem__<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 3, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	41 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">squeeze<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	42 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">cat<BR/>depth:1</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256), (32, 32) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 288) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=aliceblue]
+	subgraph cluster_14 {
+		fontsize=12 label=Sequential labeljust=l style=dashed
+		subgraph cluster_15 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			43 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 288) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		subgraph cluster_16 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			44 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 256) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 2) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+			45 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>output-tensor<BR/>depth:0</TD><TD>(32, 2)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+		}
+	}
+	1 -> 8
+	2 -> 12
+	3 -> 4
+	0 -> 5
+	5 -> 6
+	6 -> 7
+	7 -> 18
+	8 -> 9
+	9 -> 10
+	10 -> 11
+	11 -> 19
+	12 -> 13
+	13 -> 14
+	14 -> 15
+	15 -> 20
+	4 -> 16
+	16 -> 17
+	17 -> 42
+	18 -> 21
+	19 -> 21
+	20 -> 21
+	21 -> 22
+	21 -> 23
+	21 -> 24
+	21 -> 26
+	22 -> 25
+	23 -> 25
+	24 -> 25
+	25 -> 26
+	26 -> 27
+	27 -> 28
+	27 -> 29
+	28 -> 29
+	29 -> 30
+	30 -> 31
+	30 -> 32
+	30 -> 33
+	30 -> 35
+	31 -> 34
+	32 -> 34
+	33 -> 34
+	34 -> 35
+	35 -> 36
+	36 -> 37
+	36 -> 38
+	37 -> 38
+	38 -> 39
+	39 -> 40
+	40 -> 41
+	41 -> 42
+	42 -> 43
+	43 -> 44
+	44 -> 45
+}

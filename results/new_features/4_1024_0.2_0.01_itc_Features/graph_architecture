@@ -1,0 +1,101 @@
+strict digraph "camembert-base" {
+	graph [ordering=in rankdir=TB size="12.0,12.0"]
+	node [align=left fontname="Linux libertine" fontsize=10 height=0.2 margin=0 ranksep=0.1 shape=plaintext style=filled]
+	edge [fontsize=10]
+	0 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>input-tensor<BR/>depth:0</TD><TD>(32, 768)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+	subgraph cluster_2 {
+		fontsize=12 label=Sequential labeljust=l style=dashed
+		subgraph cluster_3 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			1 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 768) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		subgraph cluster_4 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			2 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		subgraph cluster_5 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			3 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		subgraph cluster_6 {
+			fontsize=12 label=LinearUnit labeljust=l style=dashed
+			4 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Sequential<BR/>depth:3</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		}
+		5 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                    <TR>
+                        <TD ROWSPAN="2">Linear<BR/>depth:2</TD>
+                        <TD COLSPAN="2">input:</TD>
+                        <TD COLSPAN="2">(32, 1024) </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN="2">output: </TD>
+                        <TD COLSPAN="2">(32, 2) </TD>
+                    </TR>
+                    </TABLE>> fillcolor=darkseagreen1]
+		6 [label=<
+                    <TABLE BORDER="0" CELLBORDER="1"
+                    CELLSPACING="0" CELLPADDING="4">
+                        <TR><TD>output-tensor<BR/>depth:0</TD><TD>(32, 2)</TD></TR>
+                    </TABLE>> fillcolor=lightyellow]
+	}
+	0 -> 1
+	1 -> 2
+	2 -> 3
+	3 -> 4
+	4 -> 5
+	5 -> 6
+}
