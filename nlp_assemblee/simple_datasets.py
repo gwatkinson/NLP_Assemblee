@@ -15,7 +15,7 @@ class AssembleeDataset(Dataset):
 
         self.use_features = use_features
         if use_features:
-            self.features = np.hstack([self.records["sexe"], self.records["n_y_naissance"]]).T
+            self.features = np.vstack([self.records["sexe"], self.records["n_y_naissance"]]).T
         else:
             self.features = False
 

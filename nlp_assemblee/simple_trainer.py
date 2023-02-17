@@ -111,6 +111,13 @@ class LitModel(pl.LightningModule):
                 T_max=self.scheduler_kwargs.pop("T_max", 1000),
                 eta_min=self.scheduler_kwargs.pop("eta_min", 0),
             )
+        elif scheduler_type == "CosineAnnealingWarmRestarts":
+            lr_scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+                optimizer,
+                T_0=self.scheduler_kwargs.pop("T_0", 1),
+                T_mult=self.scheduler_kwargs.pop("T_mult", 2),
+                eta_min=self.scheduler_kwargs.pop("eta_min", 0),
+            )
         elif scheduler_type == "CyclicLR":
             lr_scheduler = optim.lr_scheduler.CyclicLR(
                 optimizer,
@@ -234,3 +241,10 @@ def process_predictions(outputs):
     logits = np.vstack(logits)
     probs = np.vstack(probs)
     return {"labels": labels, "logits": logits, "probs": probs, "predictions": predictions}
+
+
+# class LitModelRegression(LitModel):
+#     def __init__(self, **kwargs):
+#         super.__init__(**kwargs)
+
+#     def get_loss(self, )
