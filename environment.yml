@@ -36,6 +36,7 @@ dependencies:
   - scipy=1.9
   - scikit-learn=1.1
   - umap-learn=0.5
+  - scikit-plot=0.3
 
   # API
   - requests=2.28
