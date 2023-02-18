@@ -206,7 +206,7 @@ class DataProcessing:
         processed_df["cos_day"] = np.cos(2 * np.pi * processed_df["day"] / 31)
         processed_df["sin_day"] = np.sin(2 * np.pi * processed_df["day"] / 31)
 
-        processed_df["n_sexe"] = processed_df["sexe"].map({"H": 0, "F": 1})
+        processed_df["n_sexe"] = processed_df["sexe"].map({"H": 0.0, "F": 1.0})
         processed_df["label"] = processed_df["groupe"].map(self.label_dict)
 
         return processed_df
@@ -439,10 +439,14 @@ class DataProcessing:
         except Exception as e:
             print("Could not save records.")
             print(e)
-        with open(path / f"{self.legislature}th_bert_tokenizer.pkl", "wb") as f:
-            pickle.dump(self.bert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
-        with open(path / f"{self.legislature}th_camembert_tokenizer.pkl", "wb") as f:
-            pickle.dump(self.camembert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
+        try:
+            with open(path / f"{self.legislature}th_bert_tokenizer.pkl", "wb") as f:
+                pickle.dump(self.bert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
+            with open(path / f"{self.legislature}th_camembert_tokenizer.pkl", "wb") as f:
+                pickle.dump(self.camembert_tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as e:
+            print("Could not save tokenizers.")
+            print(e)
 
     @staticmethod
     def load_pickle_df(path):

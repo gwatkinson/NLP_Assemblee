@@ -3,6 +3,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scikitplot as skplt
 import seaborn as sns
 from matplotlib.lines import Line2D
 from sklearn.metrics import (
@@ -65,6 +66,33 @@ def calculate_metrics(results):
     }
 
     return metrics
+
+
+def plot_calibration_curve(results, figsize=(6, 6), palette="deep"):
+    y_true = results["labels"]
+    probs = results["probs"]
+
+    fig, ax = plt.subplots(figsize=figsize)
+    skplt.metrics.plot_calibration_curve(y_true, [probs], ax=ax, n_bins=10)
+
+    return fig
+
+
+def plot_prediction_confidence(results, figsize=(6, 6), palette="deep"):
+    y_true = results["labels"]
+    y_pred = results["predictions"]
+    probs = results["probs"]
+    tmp_df = pd.DataFrame({"y_true": y_true, "y_pred": y_pred, "probs": probs[:, 1]})
+    tmp_df["names"] = tmp_df["y_true"].map({0: "Gauche", 1: "Droite"})
+
+    fig, ax = plt.subplots(figsize=figsize)
+    colors = sns.color_palette(palette, as_cmap=True)
+
+    sns.kdeplot(data=tmp_df, x="probs", hue="y_true", ax=ax, palette=colors, fill=True)
+
+    ax.set(xlabel="Prediction confidence", ylabel="Density")
+
+    return fig
 
 
 def calculate_metrics_binary(results):
