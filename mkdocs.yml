@@ -10,19 +10,28 @@ copyright: Copyright &copy; MIT; 2023 Gabriel WATKINSON, Jéremie STYM-POPPER
 # Set the structure of the site
 nav:
   - Home: index.md
-  - Scrapping the data: notebooks/scrapping.ipynb
-  - Data Processing and Exploration: notebooks/data_processing.ipynb
-  - Precomputing the embeddings: notebooks/precompute.ipynb
+  - Setup:
+      - Scrapping the data: notebooks/scrapping.ipynb
+      - Data Processing and Exploration: notebooks/data_processing.ipynb
+      - Precomputing the embeddings: notebooks/precompute.ipynb
   - Experiments:
       - Dummy Classifier: notebooks/experiments/dummy_classifier.ipynb
-      - Baseline Model: notebooks/experiments/base_training.ipynb
+      - Baseline Model: notebooks/experiments/baseline.ipynb
+      - Choosing the Language Model: notebooks/experiments/lm_model_selection.ipynb
+      - Choosing the Optimizer: notebooks/experiments/choose_optimizer.ipynb
+      - Finetuning: notebooks/experiments/new_features.ipynb
+      - Topic Modelling: notebooks/experiments/topic_modelling.ipynb
   - Python API:
       - Scrapping the data: simple/scrapping.md
       - Data Processing: simple/data_processing.md
+      - Precomputing the Embeddings: simple/precompute.md
       - Building the Pytorch Dataset: simple/dataset.md
+      - Pytorch Lightning Module and Trainer: simple/trainer.md
+      - Visualisation: simple/visualisation.md
   - Older API:
-      - Getting the data: api/api.md
-      # - Fetch the data: notebooks/scrapping.ipynb
+      - Building the Pytorch Dataset: complex/dataset.md
+      - Building the Pytorch Modules: complex/models.md
+      - Building the Trainer: complex/trainer.md
 
 # Set the theme
 theme:
