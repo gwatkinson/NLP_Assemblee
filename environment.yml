@@ -29,6 +29,7 @@ dependencies:
   - tensorboard=2.11
   - sentence-transformers=2.2
   - lightning-bolts=0.6
+  - bertopic=0.13
 
   # Other classic data and ML packages
   - numpy=1.23
