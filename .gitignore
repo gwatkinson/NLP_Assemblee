@@ -9,6 +9,8 @@ data
 .python-version
 results/**/**/*.html
 images_for_the_report
+to_send
+to_send.zip
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
