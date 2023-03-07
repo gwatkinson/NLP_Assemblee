@@ -1,7 +1,7 @@
 # NLP and French Politics
 
 
-[![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/gwatkinson/NLP_Assemblee/) [![Website shields.io](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://gwatkinson.github.io/NLP_Assemblee/) [![GitHub license](https://img.shields.io/github/license/gwatkinson/NLP_Assemblee.svg)](https://github.com/gwatkinson/NLP_Assemblee/blob/main/LICENSE) [![GitHub branches](https://badgen.net/github/branches/gwatkinson/NLP_Assemblee)](https://github.com/gwatkinson/NLP_Assemblee/branches)
+[![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/gwatkinson/NLP_Assemblee/) [![Website shields.io](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://gwatkinson.github.io/NLP_Assemblee/) [![GitHub license](https://img.shields.io/github/license/gwatkinson/NLP_Assemblee.svg)](https://github.com/gwatkinson/NLP_Assemblee/blob/main/LICENSE)
 
 This repository contains the NLP project for the Deep Learning course of the MVA.
 
