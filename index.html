@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#nlp-and-french-politic" class="md-skip">
+        <a href="#nlp-and-french-politics" class="md-skip">
           Skip to content
         </a>
       
@@ -275,37 +275,71 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#project-layout" class="md-nav__link">
-    Project Layout
+  <a href="#problematic" class="md-nav__link">
+    Problematic
   </a>
   
-    <nav class="md-nav" aria-label="Project Layout">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#replicating-the-results" class="md-nav__link">
+    Replicating the Results
+  </a>
+  
+    <nav class="md-nav" aria-label="Replicating the Results">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#getting-the-data" class="md-nav__link">
-    Getting the Data
+  <a href="#clone-the-repository" class="md-nav__link">
+    Clone the Repository
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#building-the-models" class="md-nav__link">
-    Building the Models
+  <a href="#create-a-conda-enviromnent" class="md-nav__link">
+    Create a Conda Enviromnent
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-dependencies" class="md-nav__link">
+    Development dependencies
+  </a>
+  
+    <nav class="md-nav" aria-label="Development dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formatters-linters-and-documentation" class="md-nav__link">
+    Formatters, Linters and Documentation
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#running-experiments" class="md-nav__link">
-    Running Experiments
+  <a href="#pre-commit" class="md-nav__link">
+    Pre-commit
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#analysing-the-results" class="md-nav__link">
-    Analysing the results
+  <a href="#git-flow" class="md-nav__link">
+    Git-Flow
   </a>
   
 </li>
@@ -330,6 +364,32 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Setup
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Setup" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Setup
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="notebooks/scrapping/" class="md-nav__link">
         Fetch the data from the web
@@ -337,11 +397,10 @@
     </li>
   
 
-    
-      
-      
-      
-
+            
+          
+            
+              
   
   
   
@@ -352,11 +411,10 @@
     </li>
   
 
-    
-      
-      
-      
-
+            
+          
+            
+              
   
   
   
@@ -364,6 +422,13 @@
       <a href="notebooks/precompute/" class="md-nav__link">
         Precompute the embeddings for the training and test set
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -379,18 +444,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_5">
+        <label class="md-nav__link" for="__nav_3">
           Experiments
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Experiments" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
+        <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           Experiments
         </label>
@@ -416,8 +481,64 @@
   
   
     <li class="md-nav__item">
-      <a href="notebooks/experiments/base_training/" class="md-nav__link">
-        Base experiment notebook
+      <a href="notebooks/experiments/baseline/" class="md-nav__link">
+        Baseline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="notebooks/experiments/lm_model_selection/" class="md-nav__link">
+        Choosing the Language Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="notebooks/experiments/choose_optimizer/" class="md-nav__link">
+        Choosing the optimizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="notebooks/experiments/new_features/" class="md-nav__link">
+        Finetuning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="notebooks/experiments/topic_modelling/" class="md-nav__link">
+        Topic Modelling
       </a>
     </li>
   
@@ -441,18 +562,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_6">
+        <label class="md-nav__link" for="__nav_4">
           Python API
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Python API" data-md-level="1">
-        <label class="md-nav__title" for="__nav_6">
+        <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
           Python API
         </label>
@@ -492,8 +613,50 @@
   
   
     <li class="md-nav__item">
+      <a href="simple/precompute/" class="md-nav__link">
+        Precomputing the Embeddings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="simple/dataset/" class="md-nav__link">
         Building the Pytorch Dataset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="simple/trainer/" class="md-nav__link">
+        Pytorch Lightning Module and Trainer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="simple/visualisation/" class="md-nav__link">
+        Visualisation
       </a>
     </li>
   
@@ -517,18 +680,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_7">
+        <label class="md-nav__link" for="__nav_5">
           Older API
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Older API" data-md-level="1">
-        <label class="md-nav__title" for="__nav_7">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Older API
         </label>
@@ -540,8 +703,36 @@
   
   
     <li class="md-nav__item">
-      <a href="api/api/" class="md-nav__link">
-        Getting the data
+      <a href="complex/dataset/" class="md-nav__link">
+        Building the Pytorch Dataset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="complex/models/" class="md-nav__link">
+        Building the Pytorch Modules
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="complex/trainer/" class="md-nav__link">
+        Building the Trainer
       </a>
     </li>
   
@@ -581,37 +772,71 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#project-layout" class="md-nav__link">
-    Project Layout
+  <a href="#problematic" class="md-nav__link">
+    Problematic
   </a>
   
-    <nav class="md-nav" aria-label="Project Layout">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#replicating-the-results" class="md-nav__link">
+    Replicating the Results
+  </a>
+  
+    <nav class="md-nav" aria-label="Replicating the Results">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#getting-the-data" class="md-nav__link">
-    Getting the Data
+  <a href="#clone-the-repository" class="md-nav__link">
+    Clone the Repository
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#building-the-models" class="md-nav__link">
-    Building the Models
+  <a href="#create-a-conda-enviromnent" class="md-nav__link">
+    Create a Conda Enviromnent
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-dependencies" class="md-nav__link">
+    Development dependencies
+  </a>
+  
+    <nav class="md-nav" aria-label="Development dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formatters-linters-and-documentation" class="md-nav__link">
+    Formatters, Linters and Documentation
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#running-experiments" class="md-nav__link">
-    Running Experiments
+  <a href="#pre-commit" class="md-nav__link">
+    Pre-commit
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#analysing-the-results" class="md-nav__link">
-    Analysing the results
+  <a href="#git-flow" class="md-nav__link">
+    Git-Flow
   </a>
   
 </li>
@@ -642,21 +867,96 @@
 
 
 
-<h1 id="nlp-and-french-politic">NLP and French Politic<a class="headerlink" href="#nlp-and-french-politic" title="Permanent link">&para;</a></h1>
-<p>This site contains the documentation for NLP project for the Deep Learning course of the MVA.</p>
+<h1 id="nlp-and-french-politics">NLP and French Politics<a class="headerlink" href="#nlp-and-french-politics" title="Permanent link">&para;</a></h1>
+<p><a href="https://github.com/gwatkinson/NLP_Assemblee/"><img alt="GitHub" src="https://badgen.net/badge/icon/github?icon=github&amp;label" /></a> <a href="https://gwatkinson.github.io/NLP_Assemblee/"><img alt="Website shields.io" src="https://img.shields.io/website-up-down-green-red/http/shields.io.svg" /></a> <a href="https://github.com/gwatkinson/NLP_Assemblee/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/gwatkinson/NLP_Assemblee.svg" /></a> <a href="https://github.com/gwatkinson/NLP_Assemblee/branches"><img alt="GitHub branches" src="https://badgen.net/github/branches/gwatkinson/NLP_Assemblee" /></a></p>
+<p>This repository contains the NLP project for the Deep Learning course of the MVA.</p>
 <p>This is a group project with Gabriel Watkinson and Jéremie Stym-Popper.</p>
-<h2 id="project-layout">Project Layout<a class="headerlink" href="#project-layout" title="Permanent link">&para;</a></h2>
-<p>There are mutliple distinct parts in this project.</p>
-<h3 id="getting-the-data">Getting the Data<a class="headerlink" href="#getting-the-data" title="Permanent link">&para;</a></h3>
-<p>First of all, we made use of an API made available by <a href="https://www.nosdeputes.fr">nosdeputes.fr</a> to fetch the textual retranscription of every session at the French Assemblée Nationale.</p>
-<ul>
-<li>The API class is available in the <a href="api/api/">api.py</a> module.</li>
-</ul>
-<!-- * Then, we used a notebook [`scrapping.ipynb`](notebooks/scrapping.ipynb) to fetch the data using the API. -->
+<!-- toc -->
 
-<h3 id="building-the-models">Building the Models<a class="headerlink" href="#building-the-models" title="Permanent link">&para;</a></h3>
-<h3 id="running-experiments">Running Experiments<a class="headerlink" href="#running-experiments" title="Permanent link">&para;</a></h3>
-<h3 id="analysing-the-results">Analysing the results<a class="headerlink" href="#analysing-the-results" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="#problematic">Problematic</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#replicating-the-results">Replicating the Results</a><ul>
+<li><a href="#clone-the-repository">Clone the Repository</a></li>
+<li><a href="#create-a-conda-enviromnent">Create a Conda Enviromnent</a></li>
+</ul>
+</li>
+<li><a href="#development-dependencies">Development dependencies</a><ul>
+<li><a href="#formatters-linters-and-documentation">Formatters, Linters and Documentation</a></li>
+<li><a href="#pre-commit">Pre-commit</a></li>
+<li><a href="#git-flow">Git-Flow</a></li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+
+<h2 id="problematic">Problematic<a class="headerlink" href="#problematic" title="Permanent link">&para;</a></h2>
+<p>This project aims to recreate a map of the French Assemblée Nationale, by classifying the deputees' political opinions on a range of subjects.</p>
+<h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
+<p>We have a <a href="https://gwatkinson.github.io/NLP_Assemblee/">https://gwatkinson.github.io/NLP_Assemblee/</a>, hosted with GitHub Pages, with the documentation of the project.</p>
+<h2 id="replicating-the-results">Replicating the Results<a class="headerlink" href="#replicating-the-results" title="Permanent link">&para;</a></h2>
+<p>To install the dependencies needed for running the code locally, follow the next steps:</p>
+<h3 id="clone-the-repository">Clone the Repository<a class="headerlink" href="#clone-the-repository" title="Permanent link">&para;</a></h3>
+<p>Clone the repository with the command:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/gwatkinson/NLP_Assemblee.git
+</code></pre></div>
+<p>Or download the zip from the <a href="https://github.com/gwatkinson/NLP_Assemblee">github</a> and unzip it where you want.</p>
+<p>Then, move into it:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>NLP_Assemblee
+</code></pre></div>
+<h3 id="create-a-conda-enviromnent">Create a Conda Enviromnent<a class="headerlink" href="#create-a-conda-enviromnent" title="Permanent link">&para;</a></h3>
+<p>Make sure you have conda or <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> installed (see <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html">here</a> for instructions to install conda).</p>
+<p>To create the conda enviromnent named <code>YOURENV</code>, choose your platform and use the following commands:</p>
+<p>Create conda enviromnent for Linux-64:</p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>YOURENV<span class="w"> </span>--file<span class="w"> </span>conda-linux-64.lock
+</code></pre></div>
+<p>Create conda enviromnent for Windows-64:</p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>YOURENV<span class="w"> </span>--file<span class="w"> </span>conda-win-64.lock
+</code></pre></div>
+<p>This can take a while since there are many packages that are quite big (namely pytorch).</p>
+<p>You can then activate the enviromnent:</p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>activate<span class="w"> </span>YOURENV
+</code></pre></div>
+<p>To generate the lock file from <code>environment.yml</code>, run:</p>
+<div class="highlight"><pre><span></span><code>conda-lock<span class="w"> </span>-k<span class="w"> </span>explicit<span class="w"> </span>--conda<span class="w"> </span>mamba
+</code></pre></div>
+<h2 id="development-dependencies">Development dependencies<a class="headerlink" href="#development-dependencies" title="Permanent link">&para;</a></h2>
+<p>We used <a href="https://pre-commit.com/">pre-commit</a> to run some formatters and other hooks before each commit.
+And we used <a href="https://github.com/nvie/gitflow">git-flow</a> to manage the different branches.</p>
+<h3 id="formatters-linters-and-documentation">Formatters, Linters and Documentation<a class="headerlink" href="#formatters-linters-and-documentation" title="Permanent link">&para;</a></h3>
+<p>To install the development dependencies with poetry, run:</p>
+<div class="highlight"><pre><span></span><code>poetry<span class="w"> </span>install
+</code></pre></div>
+<p>Or with pip:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<h3 id="pre-commit">Pre-commit<a class="headerlink" href="#pre-commit" title="Permanent link">&para;</a></h3>
+<p>If you want to contribute, please install the pre-commit hooks (in the root folder with git and with the enviromnent activated):</p>
+<div class="highlight"><pre><span></span><code>pre-commit<span class="w"> </span>install
+</code></pre></div>
+<p>This installs hooks to /.git/hooks</p>
+<p>and run it once against the code:</p>
+<div class="highlight"><pre><span></span><code>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+</code></pre></div>
+<p>This will run some formatters and other hooks before each commit.</p>
+<h3 id="git-flow">Git-Flow<a class="headerlink" href="#git-flow" title="Permanent link">&para;</a></h3>
+<p>This project tries to use the <a href="https://github.com/nvie/gitflow">gitflow</a> workflow. It relies on multiple branches:</p>
+<ul>
+<li>main</li>
+<li>develop</li>
+<li>feature/*</li>
+<li>release/*</li>
+<li>hotfixe</li>
+</ul>
+<p>To use it, please <a href="https://skoch.github.io/Git-Workflow/">install git-flow</a>, then initialize the project:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>flow<span class="w"> </span>init
+</code></pre></div>
+<p>select the default values for the names.</p>
+<p>Articles to get started:</p>
+<ul>
+<li><a href="https://jeffkreeftmeijer.com/git-flow/">https://jeffkreeftmeijer.com/git-flow/</a></li>
+<li><a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow</a></li>
+</ul>
 
               
             </article>
